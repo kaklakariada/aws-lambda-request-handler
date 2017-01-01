@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.7.3'
 }
 
 repositories {
@@ -7,7 +9,7 @@ repositories {
 }
 
 version = '0.0.1'
-group = 'com.github.kaklakariada.aws'
+group = 'com.github.kaklakariada'
 
 ext {
     jacksonVersion = '2.8.5'
@@ -17,4 +19,46 @@ dependencies {
     compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile 'org.slf4j:slf4j-api:1.7.22'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+}
+
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+publishing {
+    publications {
+        BintrayPublication(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            groupId project.group
+            artifactId project.name
+            version project.version
+            pom.withXml {
+                asNode().appendNode('licenses').appendNode('license').
+                         appendNode('name', 'GPLv3').parent().
+                         appendNode('url', 'https://www.gnu.org/licenses/gpl-3.0.html').parent().
+                         appendNode('distribution', 'repo')
+            }
+        }
+    }
+}
+
+bintray {
+    def bintrayUser = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    def bintrayApiKey = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+	user = bintrayUser
+	key = bintrayApiKey
+	publications = ['BintrayPublication']
+	pkg {
+        repo = 'maven'
+        name = project.name
+        userOrg = bintrayUser
+        licenses = ['GPL-3.0']
+        vcsUrl = 'https://github.com/kaklakariada/aws-lambda-request-handler.git'
+        version {
+            name = project.version
+        }
+    }
 }
