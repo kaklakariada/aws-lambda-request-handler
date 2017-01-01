@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.github.hierynomus.license' version '0.13.1'
 }
 
 repositories {
@@ -20,7 +21,6 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.22'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 }
-
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
@@ -61,4 +61,11 @@ bintray {
             name = project.version
         }
     }
+}
+
+license {
+    header = file('gradle/license-header.txt')
+    ext.year = 2015
+    ext.name = 'Christoph Pirkl'
+    ext.email = 'christoph at users.sourceforge.net'
 }
