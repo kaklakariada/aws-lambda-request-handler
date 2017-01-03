@@ -1,11 +1,12 @@
 # aws-lambda-request-handler
-Framework for creating AWS Lambda functions in API Gateway proxy mode.
+Framework for creating AWS Lambda functions in API Gateway proxy integration mode.
 
 [![Build Status](https://travis-ci.org/kaklakariada/aws-lambda-request-handler.svg?branch=master)](https://travis-ci.org/kaklakariada/aws-lambda-request-handler)
 [![Download](https://api.bintray.com/packages/kaklakariada/maven/aws-lambda-request-handler/images/download.svg) ](https://bintray.com/kaklakariada/maven/aws-lambda-request-handler/_latestVersion)
 
-For deploying serverless applications using gradle see https://github.com/kaklakariada/aws-sam-gradle
+This library maps [input](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format) and [output](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-output-format) format of a Lambda Function for Proxy Integration.
 
+For deploying serverless applications using gradle see https://github.com/kaklakariada/aws-sam-gradle
 
 ## Development
 
