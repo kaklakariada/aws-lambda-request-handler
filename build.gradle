@@ -13,12 +13,12 @@ version = '0.0.1'
 group = 'com.github.kaklakariada'
 
 ext {
-    jacksonVersion = '2.8.5'
+    jacksonVersion = '2.8.8.1'
 }
 
 dependencies {
     compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-    compile 'org.slf4j:slf4j-api:1.7.22'
+    compile 'org.slf4j:slf4j-api:1.7.25'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 }
 
