@@ -18,6 +18,7 @@
 package com.github.kaklakariada.aws.lambda.request;
 
 public class RequestContext {
+	private String path;
 	private String accountId;
 	private String resourceId;
 	private String stage;
@@ -26,6 +27,10 @@ public class RequestContext {
 	private String resourcePath;
 	private String httpMethod;
 	private String apiId;
+
+	public String getPath() {
+		return path;
+	}
 
 	public String getAccountId() {
 		return accountId;
@@ -61,8 +66,8 @@ public class RequestContext {
 
 	@Override
 	public String toString() {
-		return "RequestContext [accountId=" + accountId + ", resourceId=" + resourceId + ", stage=" + stage
-				+ ", requestId=" + requestId + ", identity=" + identity + ", resourcePath=" + resourcePath
+		return "RequestContext [path=" + path + ", accountId=" + accountId + ", resourceId=" + resourceId + ", stage="
+				+ stage + ", requestId=" + requestId + ", identity=" + identity + ", resourcePath=" + resourcePath
 				+ ", httpMethod=" + httpMethod + ", apiId=" + apiId + "]";
 	}
 }
