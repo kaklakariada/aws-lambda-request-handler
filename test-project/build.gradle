@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    //id 'com.github.kaklakariada.aws-sam-deploy' version '0.2.1'
 }
 
 apply plugin: 'com.github.kaklakariada.aws-sam-deploy'
@@ -28,4 +27,7 @@ serverless {
 
 dependencies {
     compile rootProject
+    
+    runtime 'org.slf4j:slf4j-log4j12:1.7.25'
+    runtime 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
 }
