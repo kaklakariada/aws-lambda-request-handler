@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless application for testing aws-lambda-request-handler
+
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: ${stage}
+      Variables:
+        stage: ${stage}
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          title:
+            Ref: AWS::StackName
+          description: |
+            Minimal serverless application with inline swagger definition for testing deployment
+        paths:
+          /echo:
+            get:
+              description: Returns an echo
+              responses:
+                default:
+                  statusCode: 200
+              x-amazon-apigateway-integration:
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EchoFunction.Arn}/invocations
+
+  EchoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.echo.EchoHandler
+      Runtime: java8
+      CodeUri: ${CodeUri}
+      Events:
+        GetRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /echo
+            Method: GET
+            
+Outputs:
+  ApiUrl:
+    Description: API endpoint URL
+    Value: !Sub https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/${stage}

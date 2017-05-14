@@ -1,0 +1,11 @@
+includeIfExists('../../aws-sam-gradle', ':aws-sam-gradle')
+
+def includeIfExists(String path, String projectName) {
+  File dir = new File(settingsDir, path)
+  if(dir.exists())
+  {
+      logger.lifecycle "Found project $projectName at $dir"
+      include projectName
+      project(projectName).projectDir = dir
+  }
+}

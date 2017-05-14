@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.exception.BadRequestException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
 import com.github.kaklakariada.aws.lambda.exception.LambdaException;
@@ -42,12 +43,12 @@ public class RequestHandlingService<I, O> {
 
 	private final ObjectMapper objectMapper;
 	private final Class<I> requestType;
-	private final LambdaRequestHandler<I, O> handler;
+	private final ControllerAdapter<I, O> handler;
 
-	public RequestHandlingService(LambdaRequestHandler<I, O> handler, Class<I> requestType) {
+	public RequestHandlingService(LambdaController<I, O> controller, Class<I> requestType, Class<O> responseType) {
 		this.objectMapper = new ObjectMapper();
 		this.requestType = requestType;
-		this.handler = handler;
+		this.handler = ControllerAdapter.create(controller, requestType, responseType);
 	}
 
 	public void handleRequest(InputStream input, OutputStream output, Context context) {
@@ -59,7 +60,7 @@ public class RequestHandlingService<I, O> {
 		try {
 			final ApiGatewayRequest request = parseRequest(readStream(input), ApiGatewayRequest.class);
 			final I body = parseBody(request);
-			final O result = handler.handleRequestInternal(request, body, context);
+			final O result = handler.handleRequest(request, body, context);
 			return new ApiGatewayResponse(serializeResult(result));
 		} catch (final LambdaException e) {
 			LOG.error("Error processing request: " + e.getMessage());

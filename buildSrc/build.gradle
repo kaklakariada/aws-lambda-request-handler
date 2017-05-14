@@ -1,0 +1,15 @@
+repositories {
+   jcenter()
+   maven {
+      url "https://plugins.gradle.org/m2/"
+   }
+}
+
+dependencies {
+    compile gradleApi()
+    if(findProject(':aws-sam-gradle')) {
+      compile project(':aws-sam-gradle')
+    } else {
+      compile 'gradle.plugin.com.github.kaklakariada.aws:aws-sam-gradle:0.2.1'
+    }
+}

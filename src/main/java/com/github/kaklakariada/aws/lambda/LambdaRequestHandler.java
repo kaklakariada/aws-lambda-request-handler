@@ -22,24 +22,18 @@ import java.io.OutputStream;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 
 public abstract class LambdaRequestHandler<I, O> implements RequestStreamHandler {
 
 	private final RequestHandlingService<I, O> requestHandlingService;
 
-	protected LambdaRequestHandler(Class<I> requestType) {
-		requestHandlingService = new RequestHandlingService<>(this, requestType);
+	protected LambdaRequestHandler(LambdaController<I, O> controller, Class<I> requestType, Class<O> responseType) {
+		requestHandlingService = new RequestHandlingService<>(controller, requestType, responseType);
 	}
 
 	@Override
-	public void handleRequest(InputStream input, OutputStream output, Context context) {
+	public final void handleRequest(InputStream input, OutputStream output, Context context) {
 		requestHandlingService.handleRequest(input, output, context);
 	}
-
-	final O handleRequestInternal(ApiGatewayRequest request, final I body, Context context) {
-		return handleRequest(request, body, context);
-	}
-
-	public abstract O handleRequest(ApiGatewayRequest request, final I body, Context context);
 }
