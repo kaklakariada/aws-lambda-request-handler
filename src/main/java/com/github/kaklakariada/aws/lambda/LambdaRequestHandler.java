@@ -29,7 +29,7 @@ public abstract class LambdaRequestHandler<I, O> implements RequestStreamHandler
 	private final RequestHandlingService<I, O> requestHandlingService;
 
 	protected LambdaRequestHandler(LambdaController<I, O> controller, Class<I> requestType, Class<O> responseType) {
-		requestHandlingService = new RequestHandlingService<>(controller, requestType, responseType);
+		requestHandlingService = RequestHandlingService.create(controller, requestType, responseType);
 	}
 
 	@Override

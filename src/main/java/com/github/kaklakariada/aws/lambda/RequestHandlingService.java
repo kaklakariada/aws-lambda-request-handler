@@ -45,10 +45,21 @@ public class RequestHandlingService<I, O> {
 	private final Class<I> requestType;
 	private final ControllerAdapter<I, O> handler;
 
-	public RequestHandlingService(LambdaController<I, O> controller, Class<I> requestType, Class<O> responseType) {
-		this.objectMapper = new ObjectMapper();
+	public static <I, O> RequestHandlingService<I, O> create(LambdaController<I, O> controller, Class<I> requestType,
+			Class<O> responseType) {
+		final ControllerAdapter<I, O> adapter = ControllerAdapter.create(controller, requestType, responseType);
+		return new RequestHandlingService<>(adapter, requestType, responseType);
+	}
+
+	RequestHandlingService(ControllerAdapter<I, O> handler, Class<I> requestType, Class<O> responseType) {
+		this(new ObjectMapper(), handler, requestType, responseType);
+	}
+
+	RequestHandlingService(ObjectMapper objectMapper, ControllerAdapter<I, O> handler, Class<I> requestType,
+			Class<O> responseType) {
+		this.objectMapper = objectMapper;
 		this.requestType = requestType;
-		this.handler = ControllerAdapter.create(controller, requestType, responseType);
+		this.handler = handler;
 	}
 
 	public void handleRequest(InputStream input, OutputStream output, Context context) {
