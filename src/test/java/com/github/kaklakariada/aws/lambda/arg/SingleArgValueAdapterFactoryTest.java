@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.github.kaklakariada.aws.lambda.controller.PathParameter;
 import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
@@ -42,8 +43,10 @@ import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 @RunWith(JUnitPlatform.class)
 public class SingleArgValueAdapterFactoryTest {
 
-	private static final String QUERY_STRING_PARAM_VALUE = "paramValue";
-	private static final String QUERY_STRING_PARAM_NAME = "paramName";
+	private static final String QUERY_STRING_PARAM_VALUE = "queryStringParamValue";
+	private static final String QUERY_STRING_PARAM_NAME = "queryStringParamName";
+	private static final String PATH_PARAM_NAME = "pathParamName";
+	private static final String PATH_PARAM_VALUE = "pathParamValue";
 
 	private SingleArgValueAdapterFactory factory;
 
@@ -60,6 +63,7 @@ public class SingleArgValueAdapterFactoryTest {
 		factory = new SingleArgValueAdapterFactory(TestRequest.class);
 		when(apiGatewayRequestMock.getQueryStringParameters())
 				.thenReturn(singletonMap(QUERY_STRING_PARAM_NAME, QUERY_STRING_PARAM_VALUE));
+		when(apiGatewayRequestMock.getPathParameters()).thenReturn(singletonMap(PATH_PARAM_NAME, PATH_PARAM_VALUE));
 	}
 
 	@Test
@@ -122,10 +126,31 @@ public class SingleArgValueAdapterFactoryTest {
 	@Test
 	public void testQueryStringParameterWrongParamType() {
 		assertConfigurationError(getParam("methodWithQueryStringParamWithWrongType", Integer.class),
-				"Argument of handler method java.lang.Integer annotated with interface com.github.kaklakariada.aws.lambda.controller.QueryStringParameter is not compatible with request type java.lang.String");
+				"Argument of handler method java.lang.Integer annotated with " + QueryStringParameter.class.getName()
+						+ " is not compatible with request type java.lang.String");
 	}
 
 	void methodWithQueryStringParamWithWrongType(@QueryStringParameter(QUERY_STRING_PARAM_NAME) Integer value) {
+
+	}
+
+	@Test
+	public void testPathParameterParam() {
+		assertEquals(PATH_PARAM_VALUE, runAdapter(getParam("methodWithPathParam", String.class)));
+	}
+
+	void methodWithPathParam(@PathParameter(PATH_PARAM_NAME) String value) {
+
+	}
+
+	@Test
+	public void testPathParameterWrongParamType() {
+		assertConfigurationError(getParam("methodWithPathParamWithWrongType", Integer.class),
+				"Argument of handler method java.lang.Integer annotated with " + PathParameter.class.getName()
+						+ " is not compatible with request type java.lang.String");
+	}
+
+	void methodWithPathParamWithWrongType(@PathParameter(PATH_PARAM_NAME) Integer value) {
 
 	}
 
