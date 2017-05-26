@@ -24,6 +24,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Parameter;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -107,9 +109,11 @@ public class ControllerAdapterTest {
 	}
 
 	@Test
-	public void testHandlerMethodWithInvalidArguments() {
+	public void testHandlerMethodWithInvalidArguments() throws NoSuchMethodException, SecurityException {
+		final Parameter param = LambdaControllerInvalidArgumentType.class.getMethod("handler1", String.class)
+				.getParameters()[0];
 		assertConfigError(new LambdaControllerInvalidArgumentType(),
-				"Could not find adapter for parameter java.lang.String arg0 of handler method");
+				"Could not find adapter for parameter " + param + " of handler method");
 	}
 
 	@Test
