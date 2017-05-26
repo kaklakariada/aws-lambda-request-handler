@@ -107,13 +107,23 @@ public class ControllerAdapterTest {
 	}
 
 	@Test
+	public void testHandlerMethodWithInvalidArguments() {
+		assertConfigError(new LambdaControllerInvalidArgumentType(),
+				"Could not find adapter for parameter java.lang.String arg0 of handler method");
+	}
+
+	@Test
 	public void testHandlerMethodMatchingReturnReturnType() {
 		final LambdaControllerValidReturnType controllerMock = mock(LambdaControllerValidReturnType.class);
 		when(controllerMock.handler1()).thenReturn(responseMock);
+		assertSame(responseMock, executeHandlerMethod(controllerMock));
+		verify(controllerMock).handler1();
+	}
+
+	private TestResponse executeHandlerMethod(final LambdaController<TestRequest, TestResponse> controllerMock) {
 		final ControllerAdapter<TestRequest, TestResponse> adapter = ControllerAdapter.create(controllerMock,
 				TestRequest.class, TestResponse.class);
-		assertSame(responseMock, adapter.handleRequest(apiGatewayRequestMock, requestBodyMock, contextMock));
-		verify(controllerMock).handler1();
+		return adapter.handleRequest(apiGatewayRequestMock, requestBodyMock, contextMock);
 	}
 
 	@Test
@@ -189,6 +199,13 @@ public class ControllerAdapterTest {
 	private static class LambdaControllerValidReturnType implements LambdaController<TestRequest, TestResponse> {
 		@RequestHandlerMethod
 		public TestResponse handler1() {
+			return null;
+		}
+	}
+
+	private static class LambdaControllerInvalidArgumentType implements LambdaController<TestRequest, TestResponse> {
+		@RequestHandlerMethod
+		public TestResponse handler1(String arg) {
 			return null;
 		}
 	}
