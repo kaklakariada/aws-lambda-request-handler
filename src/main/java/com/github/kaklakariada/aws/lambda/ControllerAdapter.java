@@ -21,13 +21,13 @@ import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.github.kaklakariada.aws.lambda.arg.AllArgValueAdapter;
+import com.github.kaklakariada.aws.lambda.arg.AllArgValueAdapterFactory;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
-import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.controller.RequestHandlerMethod;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
@@ -37,21 +37,22 @@ public class ControllerAdapter<I, O> {
 
 	private final LambdaController<I, O> controller;
 	private final Method handlerMethod;
-	private final Class<I> requestType;
 	private final Class<O> responseType;
+	private final AllArgValueAdapter argValueAdapter;
 
-	private ControllerAdapter(LambdaController<I, O> controller, Method handlerMethod, Class<I> requestType,
-			Class<O> responseType) {
+	private ControllerAdapter(LambdaController<I, O> controller, Method handlerMethod,
+			AllArgValueAdapter argValueAdapter, Class<I> requestType, Class<O> responseType) {
 		this.controller = controller;
 		this.handlerMethod = handlerMethod;
-		this.requestType = requestType;
+		this.argValueAdapter = argValueAdapter;
 		this.responseType = responseType;
 	}
 
 	public static <I, O> ControllerAdapter<I, O> create(LambdaController<I, O> controller, Class<I> requestType,
 			Class<O> responseType) {
 		final Method handlerMethod = getHandlerMethod(controller, requestType, responseType);
-		return new ControllerAdapter<I, O>(controller, handlerMethod, requestType, responseType);
+		final AllArgValueAdapter argValueAdapter = getArgValueAdapter(handlerMethod, requestType);
+		return new ControllerAdapter<I, O>(controller, handlerMethod, argValueAdapter, requestType, responseType);
 	}
 
 	private static <I, O> Method getHandlerMethod(LambdaController<I, O> controller, Class<I> requestType,
@@ -67,6 +68,10 @@ public class ControllerAdapter<I, O> {
 		return method;
 	}
 
+	private static <I> AllArgValueAdapter getArgValueAdapter(Method handlerMethod, Class<I> requestType) {
+		return new AllArgValueAdapterFactory(requestType).getAdapter(handlerMethod);
+	}
+
 	private static <O> void verifyReturnType(Class<O> responseType, final Method method) {
 		if (!responseType.isAssignableFrom(method.getReturnType())) {
 			throw new ConfigurationErrorException(
@@ -76,35 +81,12 @@ public class ControllerAdapter<I, O> {
 	}
 
 	public O handleRequest(ApiGatewayRequest request, I body, Context context) {
+		final Object[] args = argValueAdapter.getArgumentValue(request, body, context);
 		try {
-			final Object result = handlerMethod.invoke(controller, getHandlerArguments(request, body, context));
+			final Object result = handlerMethod.invoke(controller, args);
 			return responseType.cast(result);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new InternalServerErrorException("Error invoking handler method", e);
 		}
-	}
-
-	private Object[] getHandlerArguments(ApiGatewayRequest request, I body, Context context) {
-		return Arrays.stream(handlerMethod.getParameters())
-				.map(param -> getArgumentValue(param, request, body, context)).toArray();
-	}
-
-	private Object getArgumentValue(Parameter param, ApiGatewayRequest request, I body, Context context) {
-		if (param.getAnnotation(RequestBody.class) != null) {
-			if (!param.getType().isAssignableFrom(requestType)) {
-				throw new ConfigurationErrorException("Body argument of handler method " + param.getType().getName()
-						+ " is not compatible with request type " + requestType.getName());
-			}
-			return body;
-		}
-		if (param.getType().isAssignableFrom(Context.class)) {
-			return context;
-		}
-		if (param.getType().isAssignableFrom(ApiGatewayRequest.class)) {
-			return request;
-		}
-
-		throw new ConfigurationErrorException(
-				"Could not convert parameter " + param + " of handler method " + handlerMethod);
 	}
 }
