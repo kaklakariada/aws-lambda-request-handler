@@ -60,7 +60,7 @@ public class ControllerAdapter<I, O> {
 				.filter(method -> method.getAnnotation(RequestHandlerMethod.class) != null).collect(toList());
 		if (handlerMethods.isEmpty() || handlerMethods.size() > 1) {
 			throw new ConfigurationErrorException("Class " + controller.getClass().getName()
-					+ " must have exactly one method annotated with " + RequestHandlerMethod.class.getName());
+					+ " must have exactly one public method annotated with " + RequestHandlerMethod.class.getName());
 		}
 		final Method method = handlerMethods.get(0);
 		verifyReturnType(responseType, method);
@@ -69,8 +69,9 @@ public class ControllerAdapter<I, O> {
 
 	private static <O> void verifyReturnType(Class<O> responseType, final Method method) {
 		if (!responseType.isAssignableFrom(method.getReturnType())) {
-			throw new ConfigurationErrorException("Handler method return type " + method.getReturnType().getName()
-					+ " is not compatible with response type " + responseType.getName());
+			throw new ConfigurationErrorException(
+					"Return type '" + method.getReturnType().getName() + "' of handler method '" + method
+							+ "' is not compatible with response type " + responseType.getName());
 		}
 	}
 
