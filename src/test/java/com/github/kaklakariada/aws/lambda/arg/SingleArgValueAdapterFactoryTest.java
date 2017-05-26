@@ -17,9 +17,11 @@
  */
 package com.github.kaklakariada.aws.lambda.arg;
 
+import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -32,12 +34,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
 @RunWith(JUnitPlatform.class)
 public class SingleArgValueAdapterFactoryTest {
+
+	private static final String QUERY_STRING_PARAM_VALUE = "paramValue";
+	private static final String QUERY_STRING_PARAM_NAME = "paramName";
 
 	private SingleArgValueAdapterFactory factory;
 
@@ -52,6 +58,8 @@ public class SingleArgValueAdapterFactoryTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		factory = new SingleArgValueAdapterFactory(TestRequest.class);
+		when(apiGatewayRequestMock.getQueryStringParameters())
+				.thenReturn(singletonMap(QUERY_STRING_PARAM_NAME, QUERY_STRING_PARAM_VALUE));
 	}
 
 	@Test
@@ -86,8 +94,7 @@ public class SingleArgValueAdapterFactoryTest {
 
 	@Test
 	public void testUnknownParamType() {
-		final Parameter param = getParam("methodWithStringParam", String.class);
-		assertConfigurationError(param, "Could not find adapter for parameter " + param + " of handler method");
+		assertNoAdapterFound(getParam("methodWithStringParam", String.class));
 	}
 
 	void methodWithStringParam(String value) {
@@ -100,6 +107,25 @@ public class SingleArgValueAdapterFactoryTest {
 	}
 
 	void methodWithBodyTypeParam(@RequestBody TestRequest body) {
+
+	}
+
+	@Test
+	public void testQueryStringParameter() {
+		assertEquals(QUERY_STRING_PARAM_VALUE, runAdapter(getParam("methodWithQueryStringParam", String.class)));
+	}
+
+	void methodWithQueryStringParam(@QueryStringParameter(QUERY_STRING_PARAM_NAME) String value) {
+
+	}
+
+	@Test
+	public void testQueryStringParameterWrongParamType() {
+		assertConfigurationError(getParam("methodWithQueryStringParamWithWrongType", Integer.class),
+				"Argument of handler method java.lang.Integer annotated with interface com.github.kaklakariada.aws.lambda.controller.QueryStringParameter is not compatible with request type java.lang.String");
+	}
+
+	void methodWithQueryStringParamWithWrongType(@QueryStringParameter(QUERY_STRING_PARAM_NAME) Integer value) {
 
 	}
 

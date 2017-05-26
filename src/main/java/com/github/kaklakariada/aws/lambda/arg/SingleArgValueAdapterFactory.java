@@ -20,6 +20,7 @@ package com.github.kaklakariada.aws.lambda.arg;
 import java.lang.reflect.Parameter;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
@@ -46,7 +47,20 @@ public class SingleArgValueAdapterFactory {
 		if (param.getType().isAssignableFrom(ApiGatewayRequest.class)) {
 			return (ApiGatewayRequest request, Object body, Context context) -> request;
 		}
-
+		final QueryStringParameter queryString = param.getAnnotation(QueryStringParameter.class);
+		if (queryString != null) {
+			assertParamType(param, String.class);
+			return (ApiGatewayRequest request, Object body, Context context) -> request.getQueryStringParameters()
+					.get(queryString.value());
+		}
 		throw new ConfigurationErrorException("Could not find adapter for parameter " + param + " of handler method");
+	}
+
+	private void assertParamType(Parameter param, final Class<?> expectedType) {
+		if (!param.getType().isAssignableFrom(expectedType)) {
+			throw new ConfigurationErrorException("Argument of handler method " + param.getType().getName()
+					+ " annotated with " + QueryStringParameter.class + " is not compatible with request type "
+					+ expectedType.getName());
+		}
 	}
 }
