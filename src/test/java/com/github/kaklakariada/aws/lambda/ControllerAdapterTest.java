@@ -18,6 +18,7 @@
 package com.github.kaklakariada.aws.lambda;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -86,10 +87,12 @@ public class ControllerAdapterTest {
 	}
 
 	@Test
-	public void testVoidHandlerMethod() {
-		assertConfigError(new LambdaControllerVoidHandlerMethod(),
-				"Return type 'void' of handler method 'public void com.github.kaklakariada.aws.lambda.ControllerAdapterTest$LambdaControllerVoidHandlerMethod.handler1()' is not compatible with response type "
-						+ TestResponse.class.getName());
+	public void testVoidHandlerMethodReturnsNull() {
+		final LambdaControllerVoidHandlerMethod controllerMock = mock(LambdaControllerVoidHandlerMethod.class);
+		final Object result = ControllerAdapter.create(controllerMock).handleRequest(apiGatewayRequestMock,
+				contextMock);
+		assertNull(result);
+		verify(controllerMock).handler1();
 	}
 
 	@Test
@@ -97,7 +100,7 @@ public class ControllerAdapterTest {
 		final Parameter param = LambdaControllerInvalidArgumentType.class.getMethod("handler1", String.class)
 				.getParameters()[0];
 		assertConfigError(new LambdaControllerInvalidArgumentType(),
-				"Could not find adapter for parameter " + param + " of handler method");
+				"None of the arg adapter factories supports parameter '" + param + "'");
 	}
 
 	@Test
