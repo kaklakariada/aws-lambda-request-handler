@@ -17,53 +17,47 @@
  */
 package com.github.kaklakariada.aws.lambda.arg;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Parameter;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.github.kaklakariada.aws.lambda.arg.adapter.BodyArgAdapter;
-import com.github.kaklakariada.aws.lambda.controller.PathParameter;
-import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
-import com.github.kaklakariada.aws.lambda.controller.RequestBody;
+import java.lang.reflect.Parameter;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kaklakariada.aws.lambda.arg.adapter.ApiGatewayRequestAdapaterFactory;
+import com.github.kaklakariada.aws.lambda.arg.adapter.ArgAdapterFactory;
+import com.github.kaklakariada.aws.lambda.arg.adapter.BodyArgAdapterFactory;
+import com.github.kaklakariada.aws.lambda.arg.adapter.ContextArgAdapaterFactory;
+import com.github.kaklakariada.aws.lambda.arg.adapter.PathParameterArgAdapaterFactory;
+import com.github.kaklakariada.aws.lambda.arg.adapter.QueryStringArgAdapaterFactory;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
 class SingleArgValueAdapterFactory {
 
-	SingleArgValueAdapterFactory() {
+	private final List<ArgAdapterFactory> factories;
+
+	SingleArgValueAdapterFactory(List<ArgAdapterFactory> factories) {
+		this.factories = factories;
+	}
+
+	SingleArgValueAdapterFactory(ObjectMapper objectMapper) {
+		this(asList(new BodyArgAdapterFactory(objectMapper), new ApiGatewayRequestAdapaterFactory(),
+				new ContextArgAdapaterFactory(), new PathParameterArgAdapaterFactory(),
+				new QueryStringArgAdapaterFactory()));
 	}
 
 	SingleArgValueAdapter getAdapter(Parameter param) {
-		if (param.getAnnotation(RequestBody.class) != null) {
-			return new BodyArgAdapter().createAdapter(param);
-		}
-		if (param.getType().isAssignableFrom(Context.class)) {
-			return (ApiGatewayRequest request, Context context) -> context;
-		}
-		if (param.getType().isAssignableFrom(ApiGatewayRequest.class)) {
-			return (ApiGatewayRequest request, Context context) -> request;
-		}
-		final QueryStringParameter queryString = param.getAnnotation(QueryStringParameter.class);
-		if (queryString != null) {
-			assertParamType(param, String.class, QueryStringParameter.class);
-			return (ApiGatewayRequest request, Context context) -> request.getQueryStringParameters()
-					.get(queryString.value());
-		}
-
-		final PathParameter pathParameter = param.getAnnotation(PathParameter.class);
-		if (pathParameter != null) {
-			assertParamType(param, String.class, PathParameter.class);
-			return (ApiGatewayRequest request, Context context) -> request.getPathParameters()
-					.get(pathParameter.value());
-		}
-		throw new ConfigurationErrorException("Could not find adapter for parameter " + param + " of handler method");
-	}
-
-	private void assertParamType(Parameter param, final Class<?> expectedType, Class<? extends Annotation> annotation) {
-		if (!param.getType().isAssignableFrom(expectedType)) {
+		final List<ArgAdapterFactory> supportedFactories = factories.stream() //
+				.filter(factory -> factory.supports(param)) //
+				.collect(toList());
+		if (supportedFactories.isEmpty()) {
 			throw new ConfigurationErrorException(
-					"Argument of handler method " + param.getType().getName() + " annotated with "
-							+ annotation.getName() + " is not compatible with request type " + expectedType.getName());
+					"None of the arg adapter factories supports parameter '" + param + "'");
 		}
+		if (supportedFactories.size() > 1) {
+			throw new ConfigurationErrorException(
+					"More than one arg adapter factory supports parameter '" + param + "': " + supportedFactories);
+		}
+		return supportedFactories.get(0).createAdapter(param);
 	}
 }

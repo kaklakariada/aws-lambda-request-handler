@@ -10,15 +10,15 @@ import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.controller.RequestHandlerMethod;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
-public class EchoHandler extends LambdaRequestHandler<EchoRequest, EchoResponse> {
+public class EchoHandler extends LambdaRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EchoHandler.class);
 
     public EchoHandler() {
-        super(new EchoController(), EchoRequest.class, EchoResponse.class);
+        super(new EchoController());
     }
 
-    public static class EchoController implements LambdaController<EchoRequest, EchoResponse> {
+    public static class EchoController implements LambdaController {
         @RequestHandlerMethod
         public EchoResponse handleRequest(@RequestBody EchoRequest body, Context context, ApiGatewayRequest request) {
             LOG.info("Request body: {}", body);

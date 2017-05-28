@@ -24,14 +24,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
 public class AllArgValueAdapterFactory {
 
 	private final SingleArgValueAdapterFactory singleArgValueAdapterFactory;
 
-	public AllArgValueAdapterFactory() {
-		this(new SingleArgValueAdapterFactory());
+	public AllArgValueAdapterFactory(ObjectMapper objectMapper) {
+		this(new SingleArgValueAdapterFactory(objectMapper));
 	}
 
 	AllArgValueAdapterFactory(SingleArgValueAdapterFactory singleArgValueAdapterFactory) {

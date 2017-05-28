@@ -18,14 +18,18 @@
 package com.github.kaklakariada.aws.lambda.arg;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -34,6 +38,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kaklakariada.aws.lambda.controller.PathParameter;
 import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
@@ -47,6 +54,7 @@ public class SingleArgValueAdapterFactoryTest {
 	private static final String QUERY_STRING_PARAM_NAME = "queryStringParamName";
 	private static final String PATH_PARAM_NAME = "pathParamName";
 	private static final String PATH_PARAM_VALUE = "pathParamValue";
+	private static final String BODY_CONTENT = "request body content";
 
 	private SingleArgValueAdapterFactory factory;
 
@@ -54,14 +62,20 @@ public class SingleArgValueAdapterFactoryTest {
 	private ApiGatewayRequest apiGatewayRequestMock;
 	@Mock
 	private Context contextMock;
+	@Mock
+	private ObjectMapper objectMapperMock;
+	@Mock
+	private TestRequest requestBodyMock;
 
 	@BeforeEach
-	public void setup() {
+	public void setup() throws JsonParseException, JsonMappingException, IOException {
 		MockitoAnnotations.initMocks(this);
-		factory = new SingleArgValueAdapterFactory();
+		factory = new SingleArgValueAdapterFactory(objectMapperMock);
 		when(apiGatewayRequestMock.getQueryStringParameters())
 				.thenReturn(singletonMap(QUERY_STRING_PARAM_NAME, QUERY_STRING_PARAM_VALUE));
 		when(apiGatewayRequestMock.getPathParameters()).thenReturn(singletonMap(PATH_PARAM_NAME, PATH_PARAM_VALUE));
+		when(apiGatewayRequestMock.getBody()).thenReturn(BODY_CONTENT);
+		when(objectMapperMock.readValue(BODY_CONTENT, TestRequest.class)).thenReturn(requestBodyMock);
 	}
 
 	@Test
@@ -84,19 +98,9 @@ public class SingleArgValueAdapterFactoryTest {
 	}
 
 	@Test
-	public void testBodyParamWrongType() {
-		assertConfigurationError(getParam("methodWithWrongBodyTypeParam", String.class),
-				"Body argument of handler method java.lang.String is not compatible with request type "
-						+ TestRequest.class.getName());
-	}
-
-	void methodWithWrongBodyTypeParam(@RequestBody String wrongParamType) {
-
-	}
-
-	@Test
 	public void testUnknownParamType() {
-		assertNoAdapterFound(getParam("methodWithStringParam", String.class));
+		assertConfigurationError(getParam("methodWithStringParam", String.class),
+				startsWith("None of the arg adapter factories supports parameter"));
 	}
 
 	void methodWithStringParam(String value) {
@@ -105,7 +109,7 @@ public class SingleArgValueAdapterFactoryTest {
 
 	@Test
 	public void testBodyParamCorrectType() {
-		assertSame("body", runAdapter(getParam("methodWithBodyTypeParam", TestRequest.class)));
+		assertSame(requestBodyMock, runAdapter(getParam("methodWithBodyTypeParam", TestRequest.class)));
 	}
 
 	void methodWithBodyTypeParam(@RequestBody TestRequest body) {
@@ -124,8 +128,7 @@ public class SingleArgValueAdapterFactoryTest {
 	@Test
 	public void testQueryStringParameterWrongParamType() {
 		assertConfigurationError(getParam("methodWithQueryStringParamWithWrongType", Integer.class),
-				"Argument of handler method java.lang.Integer annotated with " + QueryStringParameter.class.getName()
-						+ " is not compatible with request type java.lang.String");
+				startsWith("None of the arg adapter factories supports parameter"));
 	}
 
 	void methodWithQueryStringParamWithWrongType(@QueryStringParameter(QUERY_STRING_PARAM_NAME) Integer value) {
@@ -144,8 +147,7 @@ public class SingleArgValueAdapterFactoryTest {
 	@Test
 	public void testPathParameterWrongParamType() {
 		assertConfigurationError(getParam("methodWithPathParamWithWrongType", Integer.class),
-				"Argument of handler method java.lang.Integer annotated with " + PathParameter.class.getName()
-						+ " is not compatible with request type java.lang.String");
+				startsWith("None of the arg adapter factories supports parameter"));
 	}
 
 	void methodWithPathParamWithWrongType(@PathParameter(PATH_PARAM_NAME) Integer value) {
@@ -165,15 +167,16 @@ public class SingleArgValueAdapterFactoryTest {
 		return factory.getAdapter(param).getArgumentValue(apiGatewayRequestMock, contextMock);
 	}
 
-	private void assertConfigurationError(Parameter param, String expectedErrorMessage) {
+	private void assertConfigurationError(Parameter param, Matcher<String> expectedErrorMessage) {
+		final ConfigurationErrorException exception = assertConfigurationError(param);
+		assertThat(exception.getErrorMessage(), expectedErrorMessage);
+	}
+
+	private ConfigurationErrorException assertConfigurationError(Parameter param) {
 		final ConfigurationErrorException exception = assertThrows(ConfigurationErrorException.class, () -> {
 			runAdapter(param);
 		});
-		assertEquals(expectedErrorMessage, exception.getErrorMessage());
-	}
-
-	private void assertNoAdapterFound(final Parameter param) {
-		assertConfigurationError(param, "Could not find adapter for parameter " + param + " of handler method");
+		return exception;
 	}
 
 	private static class TestRequest {

@@ -158,23 +158,9 @@ public class ControllerAdapterTest {
 		}
 	}
 
-	private static class LambdaControllerStringReturningHandlerMethod implements LambdaController {
-		@RequestHandlerMethod
-		public String handler1() {
-			return null;
-		}
-	}
-
 	private static class LambdaControllerVoidHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		public void handler1() {
-		}
-	}
-
-	private static class LambdaControllerSuperTypeReturningHandlerMethod implements LambdaController {
-		@RequestHandlerMethod
-		public BaseTestResponse handler1() {
-			return null;
 		}
 	}
 
@@ -213,13 +199,7 @@ public class ControllerAdapterTest {
 		}
 	}
 
-	private static class BaseTestRequest {
-	}
-
 	private static class BaseTestResponse {
-	}
-
-	private static class TestRequest extends BaseTestRequest {
 	}
 
 	private static class TestResponse extends BaseTestResponse {

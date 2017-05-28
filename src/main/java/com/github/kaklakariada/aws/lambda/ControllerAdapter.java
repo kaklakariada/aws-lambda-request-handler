@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kaklakariada.aws.lambda.arg.AllArgValueAdapter;
 import com.github.kaklakariada.aws.lambda.arg.AllArgValueAdapterFactory;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
@@ -62,7 +63,7 @@ public class ControllerAdapter {
 	}
 
 	private static <I> AllArgValueAdapter getArgValueAdapter(Method handlerMethod) {
-		return new AllArgValueAdapterFactory().getAdapter(handlerMethod);
+		return new AllArgValueAdapterFactory(new ObjectMapper()).getAdapter(handlerMethod);
 	}
 
 	public Object handleRequest(ApiGatewayRequest request, Context context) {

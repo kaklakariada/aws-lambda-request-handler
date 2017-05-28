@@ -14,17 +14,13 @@ import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.BadRequestException;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
-public class BodyArgAdapter implements ArgAdapterFactory {
+public class BodyArgAdapterFactory extends ArgAdapterFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BodyArgAdapter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BodyArgAdapterFactory.class);
 
 	private final ObjectMapper objectMapper;
 
-	public BodyArgAdapter() {
-		this(new ObjectMapper());
-	}
-
-	BodyArgAdapter(ObjectMapper objectMapper) {
+	public BodyArgAdapterFactory(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 
@@ -46,14 +42,25 @@ public class BodyArgAdapter implements ArgAdapterFactory {
 		if (body == null || body.isEmpty()) {
 			return null;
 		}
-		if (!request.getIsBase64Encoded()) {
-			return parseJsonString(body, bodyType);
+		if (String.class.isAssignableFrom(bodyType)) {
+			return body;
 		}
+		if (request.getIsBase64Encoded()) {
+			return base64Decode(body, bodyType);
+		}
+		return parseJsonString(body, bodyType);
+	}
+
+	private Object base64Decode(final String body, Class<?> bodyType) {
 		if (!bodyType.equals(byte[].class)) {
 			throw new IllegalStateException(
 					"Got base64 encoded body but expected request type is " + bodyType.getName());
 		}
 		return base64Decode(body);
+	}
+
+	private byte[] base64Decode(String body) {
+		return Base64.getDecoder().decode(body);
 	}
 
 	private Object parseJsonString(String input, Class<?> bodyType) {
@@ -63,9 +70,5 @@ public class BodyArgAdapter implements ArgAdapterFactory {
 			LOG.error("Error parsing input '" + input + "': " + e.getMessage(), e);
 			throw new BadRequestException("Error parsing request", e);
 		}
-	}
-
-	private byte[] base64Decode(String body) {
-		return Base64.getDecoder().decode(body);
 	}
 }
