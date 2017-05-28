@@ -33,58 +33,42 @@ import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
-public class ControllerAdapter<I, O> {
+public class ControllerAdapter {
 
-	private final LambdaController<I, O> controller;
+	private final LambdaController controller;
 	private final Method handlerMethod;
-	private final Class<O> responseType;
 	private final AllArgValueAdapter argValueAdapter;
 
-	private ControllerAdapter(LambdaController<I, O> controller, Method handlerMethod,
-			AllArgValueAdapter argValueAdapter, Class<I> requestType, Class<O> responseType) {
+	private ControllerAdapter(LambdaController controller, Method handlerMethod, AllArgValueAdapter argValueAdapter) {
 		this.controller = controller;
 		this.handlerMethod = handlerMethod;
 		this.argValueAdapter = argValueAdapter;
-		this.responseType = responseType;
 	}
 
-	public static <I, O> ControllerAdapter<I, O> create(LambdaController<I, O> controller, Class<I> requestType,
-			Class<O> responseType) {
-		final Method handlerMethod = getHandlerMethod(controller, requestType, responseType);
-		final AllArgValueAdapter argValueAdapter = getArgValueAdapter(handlerMethod, requestType);
-		return new ControllerAdapter<I, O>(controller, handlerMethod, argValueAdapter, requestType, responseType);
+	public static ControllerAdapter create(LambdaController controller) {
+		final Method handlerMethod = getHandlerMethod(controller);
+		final AllArgValueAdapter argValueAdapter = getArgValueAdapter(handlerMethod);
+		return new ControllerAdapter(controller, handlerMethod, argValueAdapter);
 	}
 
-	private static <I, O> Method getHandlerMethod(LambdaController<I, O> controller, Class<I> requestType,
-			Class<O> responseType) {
+	private static Method getHandlerMethod(LambdaController controller) {
 		final List<Method> handlerMethods = Arrays.stream(controller.getClass().getMethods())
 				.filter(method -> method.getAnnotation(RequestHandlerMethod.class) != null).collect(toList());
 		if (handlerMethods.isEmpty() || handlerMethods.size() > 1) {
 			throw new ConfigurationErrorException("Class " + controller.getClass().getName()
 					+ " must have exactly one public method annotated with " + RequestHandlerMethod.class.getName());
 		}
-		final Method method = handlerMethods.get(0);
-		verifyReturnType(responseType, method);
-		return method;
+		return handlerMethods.get(0);
 	}
 
-	private static <I> AllArgValueAdapter getArgValueAdapter(Method handlerMethod, Class<I> requestType) {
-		return new AllArgValueAdapterFactory(requestType).getAdapter(handlerMethod);
+	private static <I> AllArgValueAdapter getArgValueAdapter(Method handlerMethod) {
+		return new AllArgValueAdapterFactory().getAdapter(handlerMethod);
 	}
 
-	private static <O> void verifyReturnType(Class<O> responseType, final Method method) {
-		if (!responseType.isAssignableFrom(method.getReturnType())) {
-			throw new ConfigurationErrorException(
-					"Return type '" + method.getReturnType().getName() + "' of handler method '" + method
-							+ "' is not compatible with response type " + responseType.getName());
-		}
-	}
-
-	public O handleRequest(ApiGatewayRequest request, I body, Context context) {
-		final Object[] args = argValueAdapter.getArgumentValue(request, body, context);
+	public Object handleRequest(ApiGatewayRequest request, Context context) {
+		final Object[] args = argValueAdapter.getArgumentValue(request, context);
 		try {
-			final Object result = handlerMethod.invoke(controller, args);
-			return responseType.cast(result);
+			return handlerMethod.invoke(controller, args);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new InternalServerErrorException("Error invoking handler method", e);
 		}

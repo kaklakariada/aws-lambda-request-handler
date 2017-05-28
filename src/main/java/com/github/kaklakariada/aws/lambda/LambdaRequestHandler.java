@@ -24,12 +24,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 
-public abstract class LambdaRequestHandler<I, O> implements RequestStreamHandler {
+public abstract class LambdaRequestHandler implements RequestStreamHandler {
 
-	private final RequestHandlingService<I, O> requestHandlingService;
+	private final RequestHandlingService requestHandlingService;
 
-	protected LambdaRequestHandler(LambdaController<I, O> controller, Class<I> requestType, Class<O> responseType) {
-		requestHandlingService = RequestHandlingService.create(controller, requestType, responseType);
+	protected LambdaRequestHandler(LambdaController controller) {
+		requestHandlingService = RequestHandlingService.create(controller);
 	}
 
 	@Override

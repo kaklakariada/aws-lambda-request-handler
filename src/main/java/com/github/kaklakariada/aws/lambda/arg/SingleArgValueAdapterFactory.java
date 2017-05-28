@@ -21,45 +21,39 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.github.kaklakariada.aws.lambda.arg.adapter.BodyArgAdapter;
 import com.github.kaklakariada.aws.lambda.controller.PathParameter;
 import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
-public class SingleArgValueAdapterFactory {
+class SingleArgValueAdapterFactory {
 
-	private final Class<?> requestType;
-
-	public SingleArgValueAdapterFactory(Class<?> requestType) {
-		this.requestType = requestType;
+	SingleArgValueAdapterFactory() {
 	}
 
-	public SingleArgValueAdapter getAdapter(Parameter param) {
+	SingleArgValueAdapter getAdapter(Parameter param) {
 		if (param.getAnnotation(RequestBody.class) != null) {
-			if (!param.getType().isAssignableFrom(requestType)) {
-				throw new ConfigurationErrorException("Body argument of handler method " + param.getType().getName()
-						+ " is not compatible with request type " + requestType.getName());
-			}
-			return (ApiGatewayRequest request, Object body, Context context) -> body;
+			return new BodyArgAdapter().createAdapter(param);
 		}
 		if (param.getType().isAssignableFrom(Context.class)) {
-			return (ApiGatewayRequest request, Object body, Context context) -> context;
+			return (ApiGatewayRequest request, Context context) -> context;
 		}
 		if (param.getType().isAssignableFrom(ApiGatewayRequest.class)) {
-			return (ApiGatewayRequest request, Object body, Context context) -> request;
+			return (ApiGatewayRequest request, Context context) -> request;
 		}
 		final QueryStringParameter queryString = param.getAnnotation(QueryStringParameter.class);
 		if (queryString != null) {
 			assertParamType(param, String.class, QueryStringParameter.class);
-			return (ApiGatewayRequest request, Object body, Context context) -> request.getQueryStringParameters()
+			return (ApiGatewayRequest request, Context context) -> request.getQueryStringParameters()
 					.get(queryString.value());
 		}
 
 		final PathParameter pathParameter = param.getAnnotation(PathParameter.class);
 		if (pathParameter != null) {
 			assertParamType(param, String.class, PathParameter.class);
-			return (ApiGatewayRequest request, Object body, Context context) -> request.getPathParameters()
+			return (ApiGatewayRequest request, Context context) -> request.getPathParameters()
 					.get(pathParameter.value());
 		}
 		throw new ConfigurationErrorException("Could not find adapter for parameter " + param + " of handler method");

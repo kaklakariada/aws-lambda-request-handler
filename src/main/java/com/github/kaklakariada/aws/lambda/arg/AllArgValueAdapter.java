@@ -22,5 +22,5 @@ import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
 @FunctionalInterface
 public interface AllArgValueAdapter {
-	Object[] getArgumentValue(ApiGatewayRequest request, Object body, Context context);
+	Object[] getArgumentValue(ApiGatewayRequest request, Context context);
 }

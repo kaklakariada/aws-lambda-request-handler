@@ -45,17 +45,15 @@ import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 public class RequestHandlingServiceTest {
 
 	@Mock
-	private ControllerAdapter<TestRequest, TestResponse> controllerMock;
+	private ControllerAdapter controllerMock;
 	@Mock
 	private Context contextMock;
 	@Mock
 	private ApiGatewayRequest apiGatewayRequestMock;
 	@Mock
-	private TestRequest bodyMock;
-	@Mock
 	private TestResponse responseMock;
 
-	private RequestHandlingService<TestRequest, TestResponse> service;
+	private RequestHandlingService service;
 	private ObjectMapper objectMapper;
 	private JsonNodeFactory jsonFactory;
 
@@ -64,9 +62,8 @@ public class RequestHandlingServiceTest {
 		MockitoAnnotations.initMocks(this);
 		objectMapper = new ObjectMapper();
 		jsonFactory = JsonNodeFactory.instance;
-		service = new RequestHandlingService<TestRequest, TestResponse>(controllerMock, TestRequest.class,
-				TestResponse.class);
-		when(controllerMock.handleRequest(same(apiGatewayRequestMock), same(bodyMock), same(contextMock)))
+		service = new RequestHandlingService(controllerMock);
+		when(controllerMock.handleRequest(same(apiGatewayRequestMock), same(contextMock)))
 				.thenReturn(new TestResponse());
 	}
 

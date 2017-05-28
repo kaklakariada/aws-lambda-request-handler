@@ -53,14 +53,12 @@ public class SingleArgValueAdapterFactoryTest {
 	@Mock
 	private ApiGatewayRequest apiGatewayRequestMock;
 	@Mock
-	private Object requestBodyMock;
-	@Mock
 	private Context contextMock;
 
 	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		factory = new SingleArgValueAdapterFactory(TestRequest.class);
+		factory = new SingleArgValueAdapterFactory();
 		when(apiGatewayRequestMock.getQueryStringParameters())
 				.thenReturn(singletonMap(QUERY_STRING_PARAM_NAME, QUERY_STRING_PARAM_VALUE));
 		when(apiGatewayRequestMock.getPathParameters()).thenReturn(singletonMap(PATH_PARAM_NAME, PATH_PARAM_VALUE));
@@ -107,7 +105,7 @@ public class SingleArgValueAdapterFactoryTest {
 
 	@Test
 	public void testBodyParamCorrectType() {
-		assertSame(requestBodyMock, runAdapter(getParam("methodWithBodyTypeParam", TestRequest.class)));
+		assertSame("body", runAdapter(getParam("methodWithBodyTypeParam", TestRequest.class)));
 	}
 
 	void methodWithBodyTypeParam(@RequestBody TestRequest body) {
@@ -164,7 +162,7 @@ public class SingleArgValueAdapterFactoryTest {
 	}
 
 	private Object runAdapter(Parameter param) {
-		return factory.getAdapter(param).getArgumentValue(apiGatewayRequestMock, requestBodyMock, contextMock);
+		return factory.getAdapter(param).getArgumentValue(apiGatewayRequestMock, contextMock);
 	}
 
 	private void assertConfigurationError(Parameter param, String expectedErrorMessage) {

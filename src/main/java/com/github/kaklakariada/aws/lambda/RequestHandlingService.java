@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Base64;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -38,27 +37,23 @@ import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException
 import com.github.kaklakariada.aws.lambda.exception.LambdaException;
 import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
 
-public class RequestHandlingService<I, O> {
+public class RequestHandlingService {
 	private static final Logger LOG = LoggerFactory.getLogger(RequestHandlingService.class);
 
 	private final ObjectMapper objectMapper;
-	private final Class<I> requestType;
-	private final ControllerAdapter<I, O> handler;
+	private final ControllerAdapter handler;
 
-	public static <I, O> RequestHandlingService<I, O> create(LambdaController<I, O> controller, Class<I> requestType,
-			Class<O> responseType) {
-		final ControllerAdapter<I, O> adapter = ControllerAdapter.create(controller, requestType, responseType);
-		return new RequestHandlingService<>(adapter, requestType, responseType);
+	public static RequestHandlingService create(LambdaController controller) {
+		final ControllerAdapter adapter = ControllerAdapter.create(controller);
+		return new RequestHandlingService(adapter);
 	}
 
-	RequestHandlingService(ControllerAdapter<I, O> handler, Class<I> requestType, Class<O> responseType) {
-		this(new ObjectMapper(), handler, requestType, responseType);
+	RequestHandlingService(ControllerAdapter handler) {
+		this(new ObjectMapper(), handler);
 	}
 
-	RequestHandlingService(ObjectMapper objectMapper, ControllerAdapter<I, O> handler, Class<I> requestType,
-			Class<O> responseType) {
+	RequestHandlingService(ObjectMapper objectMapper, ControllerAdapter handler) {
 		this.objectMapper = objectMapper;
-		this.requestType = requestType;
 		this.handler = handler;
 	}
 
@@ -69,9 +64,8 @@ public class RequestHandlingService<I, O> {
 
 	private ApiGatewayResponse handleRequest(InputStream input, Context context) {
 		try {
-			final ApiGatewayRequest request = parseRequest(readStream(input), ApiGatewayRequest.class);
-			final I body = parseBody(request);
-			final O result = handler.handleRequest(request, body, context);
+			final ApiGatewayRequest request = parseJsonString(readStream(input), ApiGatewayRequest.class);
+			final Object result = handler.handleRequest(request, context);
 			return new ApiGatewayResponse(serializeResult(result));
 		} catch (final LambdaException e) {
 			LOG.error("Error processing request: " + e.getMessage());
@@ -90,27 +84,6 @@ public class RequestHandlingService<I, O> {
 		}
 	}
 
-	private I parseBody(ApiGatewayRequest request) {
-		final String body = request.getBody();
-		if (body == null || body.isEmpty()) {
-			return null;
-		}
-		if (!request.getIsBase64Encoded()) {
-			return parseRequest(body, requestType);
-		}
-		if (!requestType.equals(byte[].class)) {
-			throw new IllegalStateException(
-					"Got base64 encoded body but expected request type is " + requestType.getName());
-		}
-		return base64Decode(body);
-	}
-
-	private I base64Decode(String body) {
-		@SuppressWarnings("unchecked")
-		final I decodedBody = (I) Base64.getDecoder().decode(body);
-		return decodedBody;
-	}
-
 	private void sendResponse(OutputStream output, ApiGatewayResponse response) {
 		try {
 			objectMapper.writeValue(output, response);
@@ -120,7 +93,7 @@ public class RequestHandlingService<I, O> {
 		}
 	}
 
-	private <T> T parseRequest(String input, Class<T> type) {
+	private <T> T parseJsonString(String input, Class<T> type) {
 		try {
 			return objectMapper.readValue(input, type);
 		} catch (final Exception e) {

@@ -30,8 +30,8 @@ public class AllArgValueAdapterFactory {
 
 	private final SingleArgValueAdapterFactory singleArgValueAdapterFactory;
 
-	public AllArgValueAdapterFactory(Class<?> requestType) {
-		this(new SingleArgValueAdapterFactory(requestType));
+	public AllArgValueAdapterFactory() {
+		this(new SingleArgValueAdapterFactory());
 	}
 
 	AllArgValueAdapterFactory(SingleArgValueAdapterFactory singleArgValueAdapterFactory) {
@@ -43,8 +43,8 @@ public class AllArgValueAdapterFactory {
 				.map(singleArgValueAdapterFactory::getAdapter) //
 				.collect(toList());
 
-		return (ApiGatewayRequest request, Object body, Context context) -> adapters.stream()
-				.map(adapter -> adapter.getArgumentValue(request, body, context)) //
+		return (ApiGatewayRequest request, Context context) -> adapters.stream()
+				.map(adapter -> adapter.getArgumentValue(request, context)) //
 				.toArray();
 	}
 }

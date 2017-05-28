@@ -46,8 +46,6 @@ public class ControllerAdapterTest {
 	@Mock
 	private ApiGatewayRequest apiGatewayRequestMock;
 	@Mock
-	private TestRequest requestBodyMock;
-	@Mock
 	private Context contextMock;
 	@Mock
 	private TestResponse responseMock;
@@ -95,20 +93,6 @@ public class ControllerAdapterTest {
 	}
 
 	@Test
-	public void testHandlerMethodWithWrongReturnType() {
-		assertConfigError(new LambdaControllerStringReturningHandlerMethod(),
-				"Return type 'java.lang.String' of handler method 'public java.lang.String com.github.kaklakariada.aws.lambda.ControllerAdapterTest$LambdaControllerStringReturningHandlerMethod.handler1()' is not compatible with response type "
-						+ TestResponse.class.getName());
-	}
-
-	@Test
-	public void testHandlerMethodWithSuperTypeReturnType() {
-		assertConfigError(new LambdaControllerSuperTypeReturningHandlerMethod(),
-				"Return type 'com.github.kaklakariada.aws.lambda.ControllerAdapterTest$BaseTestResponse' of handler method 'public com.github.kaklakariada.aws.lambda.ControllerAdapterTest$BaseTestResponse com.github.kaklakariada.aws.lambda.ControllerAdapterTest$LambdaControllerSuperTypeReturningHandlerMethod.handler1()' is not compatible with response type "
-						+ TestResponse.class.getName());
-	}
-
-	@Test
 	public void testHandlerMethodWithInvalidArguments() throws NoSuchMethodException, SecurityException {
 		final Parameter param = LambdaControllerInvalidArgumentType.class.getMethod("handler1", String.class)
 				.getParameters()[0];
@@ -124,10 +108,9 @@ public class ControllerAdapterTest {
 		verify(controllerMock).handler1();
 	}
 
-	private TestResponse executeHandlerMethod(final LambdaController<TestRequest, TestResponse> controllerMock) {
-		final ControllerAdapter<TestRequest, TestResponse> adapter = ControllerAdapter.create(controllerMock,
-				TestRequest.class, TestResponse.class);
-		return adapter.handleRequest(apiGatewayRequestMock, requestBodyMock, contextMock);
+	private Object executeHandlerMethod(final LambdaController controllerMock) {
+		final ControllerAdapter adapter = ControllerAdapter.create(controllerMock);
+		return adapter.handleRequest(apiGatewayRequestMock, contextMock);
 	}
 
 	@Test
@@ -136,39 +119,36 @@ public class ControllerAdapterTest {
 		final RuntimeException cause = new RuntimeException("expected");
 		when(controllerMock.handler1()).thenThrow(cause);
 
-		final ControllerAdapter<TestRequest, TestResponse> adapter = ControllerAdapter.create(controllerMock,
-				TestRequest.class, TestResponse.class);
+		final ControllerAdapter adapter = ControllerAdapter.create(controllerMock);
 
 		final InternalServerErrorException exception = assertThrows(InternalServerErrorException.class,
-				() -> adapter.handleRequest(apiGatewayRequestMock, requestBodyMock, contextMock));
+				() -> adapter.handleRequest(apiGatewayRequestMock, contextMock));
 		assertSame(cause, exception.getCause().getCause());
 		assertEquals("Error invoking handler method", exception.getErrorMessage());
 	}
 
-	private void assertHandlerMethodConfigError(final LambdaController<TestRequest, TestResponse> controller) {
+	private void assertHandlerMethodConfigError(final LambdaController controller) {
 		final String expectedErrorMessage = "Class " + controller.getClass().getName()
 				+ " must have exactly one public method annotated with " + RequestHandlerMethod.class.getName();
 		assertConfigError(controller, expectedErrorMessage);
 	}
 
-	private void assertConfigError(final LambdaController<TestRequest, TestResponse> controller,
-			String expectedErrorMessage) {
+	private void assertConfigError(final LambdaController controller, String expectedErrorMessage) {
 		final ConfigurationErrorException exception = assertThrows(ConfigurationErrorException.class,
-				() -> ControllerAdapter.create(controller, TestRequest.class, TestResponse.class));
+				() -> ControllerAdapter.create(controller));
 
 		assertEquals(expectedErrorMessage, exception.getErrorMessage());
 	}
 
-	private static class LambdaControllerMissingHandlerMethod implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerMissingHandlerMethod implements LambdaController {
 	}
 
-	private static class LambdaControllerMissingHandlerMethodAnnotation
-			implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerMissingHandlerMethodAnnotation implements LambdaController {
 		public void handler() {
 		}
 	}
 
-	private static class LambdaControllerTwoHandlerMethods implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerTwoHandlerMethods implements LambdaController {
 		@RequestHandlerMethod
 		public void handler1() {
 		}
@@ -178,60 +158,55 @@ public class ControllerAdapterTest {
 		}
 	}
 
-	private static class LambdaControllerStringReturningHandlerMethod
-			implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerStringReturningHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		public String handler1() {
 			return null;
 		}
 	}
 
-	private static class LambdaControllerVoidHandlerMethod implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerVoidHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		public void handler1() {
 		}
 	}
 
-	private static class LambdaControllerSuperTypeReturningHandlerMethod
-			implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerSuperTypeReturningHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		public BaseTestResponse handler1() {
 			return null;
 		}
 	}
 
-	private static class LambdaControllerValidReturnType implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerValidReturnType implements LambdaController {
 		@RequestHandlerMethod
 		public TestResponse handler1() {
 			return null;
 		}
 	}
 
-	private static class LambdaControllerInvalidArgumentType implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerInvalidArgumentType implements LambdaController {
 		@RequestHandlerMethod
 		public TestResponse handler1(String arg) {
 			return null;
 		}
 	}
 
-	private static class LambdaControllerWithPrivateHandlerMethod
-			implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerWithPrivateHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		private TestResponse handler1() {
 			return null;
 		}
 	}
 
-	private static class LambdaControllerWithPackagePrivateHandlerMethod
-			implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerWithPackagePrivateHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		TestResponse handler1() {
 			return null;
 		}
 	}
 
-	private static class LambdaControllerWithProtectedHandlerMethod
-			implements LambdaController<TestRequest, TestResponse> {
+	private static class LambdaControllerWithProtectedHandlerMethod implements LambdaController {
 		@RequestHandlerMethod
 		protected TestResponse handler1() {
 			return null;
