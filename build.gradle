@@ -4,7 +4,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4'
+		classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M5'
 	}
 }
 
@@ -12,7 +12,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'com.jfrog.bintray' version '1.7.3'
-    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'com.github.hierynomus.license' version '0.14.0'
 }
 
 apply plugin: 'org.junit.platform.gradle.plugin'
@@ -21,18 +21,17 @@ repositories {
     jcenter()
 }
 
-version = '0.1.0'
+version = '0.2.0'
 group = 'com.github.kaklakariada'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    jacksonVersion = '2.8.8.1'
+    jacksonVersion = '2.8.9'
     junit4Version = '4.12'
-    junitVintageVersion  = '4.12.0-M4'
-    junitPlatformVersion = '1.0.0-M4'
-    junitJupiterVersion = '5.0.0-M4'
-    log4jVersion = '2.6.2'
+    junitPlatformVersion = '1.0.0-M5'
+    junitJupiterVersion = '5.0.0-M5'
+    log4jVersion = '2.8.2'
 }
 
 compileTestJava {
@@ -42,9 +41,9 @@ compileTestJava {
 dependencies {
     compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile 'org.slf4j:slf4j-api:1.7.25'
-    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     
-    testCompile 'org.mockito:mockito-core:2.7.22'
+    testCompile 'org.mockito:mockito-core:2.8.47'
     
     testCompile "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
