@@ -147,6 +147,7 @@ public class ControllerAdapterTest {
 	}
 
 	private static class LambdaControllerMissingHandlerMethodAnnotation implements LambdaController {
+		@SuppressWarnings("unused")
 		public void handler() {
 		}
 	}

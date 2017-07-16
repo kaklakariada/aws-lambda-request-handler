@@ -103,9 +103,6 @@ public class RequestHandlingServiceTest {
 		return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	private static class TestRequest {
-	}
-
 	private static class TestResponse {
 	}
 }
