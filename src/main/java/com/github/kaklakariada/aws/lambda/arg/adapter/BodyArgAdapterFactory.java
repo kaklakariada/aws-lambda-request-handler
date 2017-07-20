@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kaklakariada.aws.lambda.arg.SingleArgValueAdapter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.BadRequestException;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class BodyArgAdapterFactory extends ArgAdapterFactory {
 

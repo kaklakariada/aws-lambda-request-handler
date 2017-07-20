@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 @RunWith(JUnitPlatform.class)
 public class RequestHandlingServiceTest {

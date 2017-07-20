@@ -1,6 +1,6 @@
 package handler.echo;
 
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class EchoResponse {
     private final String message;

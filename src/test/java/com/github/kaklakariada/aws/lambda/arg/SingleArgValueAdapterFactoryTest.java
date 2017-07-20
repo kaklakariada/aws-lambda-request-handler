@@ -45,7 +45,7 @@ import com.github.kaklakariada.aws.lambda.controller.PathParameter;
 import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 @RunWith(JUnitPlatform.class)
 public class SingleArgValueAdapterFactoryTest {

@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class AllArgValueAdapterFactory {
 

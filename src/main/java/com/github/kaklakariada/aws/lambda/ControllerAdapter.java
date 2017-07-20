@@ -32,7 +32,7 @@ import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.controller.RequestHandlerMethod;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class ControllerAdapter {
 

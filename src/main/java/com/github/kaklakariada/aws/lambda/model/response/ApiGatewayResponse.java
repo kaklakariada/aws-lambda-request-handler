@@ -15,8 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.kaklakariada.aws.lambda.request;
+package com.github.kaklakariada.aws.lambda.model.response;
 
-public enum HttpMethod {
-	GET, POST, PUT, DELETE, HEAD, PATCH;
+import java.util.Collections;
+import java.util.Map;
+
+public class ApiGatewayResponse {
+	private final int statusCode;
+	private final Map<String, String> headers;
+	private final String body;
+
+	public ApiGatewayResponse(int statusCode, Map<String, String> headers, String body) {
+		this.statusCode = statusCode;
+		this.headers = headers;
+		this.body = body;
+	}
+
+	public ApiGatewayResponse(String body) {
+		this(200, Collections.emptyMap(), body);
+	}
+
+	public int getStatusCode() {
+		return statusCode;
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	public String getBody() {
+		return body.toString();
+	}
 }

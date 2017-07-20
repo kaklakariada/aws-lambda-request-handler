@@ -35,7 +35,8 @@ import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.exception.BadRequestException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
 import com.github.kaklakariada.aws.lambda.exception.LambdaException;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.response.ApiGatewayResponse;
 
 public class RequestHandlingService {
 	private static final Logger LOG = LoggerFactory.getLogger(RequestHandlingService.class);

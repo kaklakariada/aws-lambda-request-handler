@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.kaklakariada.aws.lambda.request;
+package com.github.kaklakariada.aws.lambda.model.request;
 
 import java.util.Map;
 

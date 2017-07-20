@@ -18,7 +18,7 @@
 package com.github.kaklakariada.aws.lambda.arg;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 @FunctionalInterface
 public interface SingleArgValueAdapter {

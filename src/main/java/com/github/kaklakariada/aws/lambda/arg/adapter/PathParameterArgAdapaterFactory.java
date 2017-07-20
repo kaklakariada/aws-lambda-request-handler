@@ -23,7 +23,7 @@ import java.lang.reflect.Parameter;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.github.kaklakariada.aws.lambda.arg.SingleArgValueAdapter;
 import com.github.kaklakariada.aws.lambda.controller.PathParameter;
-import com.github.kaklakariada.aws.lambda.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class PathParameterArgAdapaterFactory extends ArgAdapterFactory {
 
