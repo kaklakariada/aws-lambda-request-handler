@@ -72,6 +72,46 @@ public class ApiGatewayRequest {
 		return isBase64Encoded;
 	}
 
+	public void setResource(String resource) {
+		this.resource = resource;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public void setHttpMethod(HttpMethod httpMethod) {
+		this.httpMethod = httpMethod;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
+
+	public void setQueryStringParameters(Map<String, String> queryStringParameters) {
+		this.queryStringParameters = queryStringParameters;
+	}
+
+	public void setPathParameters(Map<String, String> pathParameters) {
+		this.pathParameters = pathParameters;
+	}
+
+	public void setStageVariables(Map<String, String> stageVariables) {
+		this.stageVariables = stageVariables;
+	}
+
+	public void setRequestContext(RequestContext requestContext) {
+		this.requestContext = requestContext;
+	}
+
+	public void setBody(String body) {
+		this.body = body;
+	}
+
+	public void setBase64Encoded(boolean isBase64Encoded) {
+		this.isBase64Encoded = isBase64Encoded;
+	}
+
 	@Override
 	public String toString() {
 		return "ApiGatewayRequest [resource=" + resource + ", path=" + path + ", httpMethod=" + httpMethod
