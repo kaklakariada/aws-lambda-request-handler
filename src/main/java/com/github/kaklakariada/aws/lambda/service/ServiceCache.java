@@ -13,11 +13,11 @@ public class ServiceCache<P extends ServiceParams> {
 		this.factory = factory;
 	}
 
-	public <T> T getService(Class<T> type, ApiGatewayRequest request, Map<String, String> env) {
-		return getService(type, factory.extractServiceParams(request, env));
+	public P getParams(ApiGatewayRequest request, Map<String, String> env) {
+		return factory.extractServiceParams(request, env);
 	}
 
-	private <T> T getService(Class<T> type, P params) {
+	public <T> T getService(Class<T> type, P params) {
 		ServiceRegistry registry = serviceRegistries.get(params);
 		if (registry == null) {
 			registry = new ServiceRegistry();

@@ -37,10 +37,15 @@ public class ServiceCacheTest {
 
 	@Test
 	public void testServicesRegistered() {
-		final MyServiceB serviceStage1ValA = cache.getService(MyServiceB.class, requestA, ENV_STAGE1);
-		final MyServiceB serviceStage1ValB = cache.getService(MyServiceB.class, requestB, ENV_STAGE1);
-		final MyServiceB serviceStage2ValA = cache.getService(MyServiceB.class, requestA, ENV_STAGE2);
-		final MyServiceB serviceStage2ValB = cache.getService(MyServiceB.class, requestB, ENV_STAGE2);
+		final MyServiceParams paramStage1ValA = cache.getParams(requestA, ENV_STAGE1);
+		final MyServiceParams paramStage1ValB = cache.getParams(requestB, ENV_STAGE1);
+		final MyServiceParams paramStage2ValA = cache.getParams(requestA, ENV_STAGE2);
+		final MyServiceParams paramStage2ValB = cache.getParams(requestB, ENV_STAGE2);
+
+		final MyServiceB serviceStage1ValA = cache.getService(MyServiceB.class, paramStage1ValA);
+		final MyServiceB serviceStage1ValB = cache.getService(MyServiceB.class, paramStage1ValB);
+		final MyServiceB serviceStage2ValA = cache.getService(MyServiceB.class, paramStage2ValA);
+		final MyServiceB serviceStage2ValB = cache.getService(MyServiceB.class, paramStage2ValB);
 
 		assertThat(serviceStage1ValA.getValue(), equalTo("Stage: " + STAGE1 + ", config: " + SETTING_VAL_A));
 		assertThat(serviceStage1ValB.getValue(), equalTo("Stage: " + STAGE1 + ", config: " + SETTING_VAL_B));
