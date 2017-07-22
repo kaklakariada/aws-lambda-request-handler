@@ -23,13 +23,18 @@ import java.io.OutputStream;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
+import com.github.kaklakariada.aws.lambda.service.ServiceFactory;
 
 public abstract class LambdaRequestHandler implements RequestStreamHandler {
 
 	private final RequestHandlingService requestHandlingService;
 
 	protected LambdaRequestHandler(LambdaController controller) {
-		requestHandlingService = RequestHandlingService.create(controller);
+		this(controller, null);
+	}
+
+	protected LambdaRequestHandler(LambdaController controller, ServiceFactory<?> serviceFactory) {
+		requestHandlingService = RequestHandlingService.create(controller, serviceFactory);
 	}
 
 	@Override

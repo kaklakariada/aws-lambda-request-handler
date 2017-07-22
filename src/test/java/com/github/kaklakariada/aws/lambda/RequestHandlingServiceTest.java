@@ -18,7 +18,9 @@
 package com.github.kaklakariada.aws.lambda;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -39,6 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.kaklakariada.aws.lambda.listener.RequestProcessingListener;
 import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 @RunWith(JUnitPlatform.class)
@@ -52,6 +56,8 @@ public class RequestHandlingServiceTest {
 	private ApiGatewayRequest apiGatewayRequestMock;
 	@Mock
 	private TestResponse responseMock;
+	@Mock
+	private RequestProcessingListener listenerMock;
 
 	private RequestHandlingService service;
 	private ObjectMapper objectMapper;
@@ -62,7 +68,7 @@ public class RequestHandlingServiceTest {
 		MockitoAnnotations.initMocks(this);
 		objectMapper = new ObjectMapper();
 		jsonFactory = JsonNodeFactory.instance;
-		service = new RequestHandlingService(controllerMock);
+		service = new RequestHandlingService(controllerMock, listenerMock);
 		when(controllerMock.handleRequest(same(apiGatewayRequestMock), same(contextMock)))
 				.thenReturn(new TestResponse());
 	}
@@ -70,6 +76,16 @@ public class RequestHandlingServiceTest {
 	@Test
 	public void testRequest() {
 		assertEquals(response(200, "null"), handleRequest(jsonFactory.objectNode()));
+	}
+
+	@Test
+	public void testListenerCalled() {
+		handleRequest(jsonFactory.objectNode());
+
+		final InOrder inOrder = inOrder(listenerMock);
+		inOrder.verify(listenerMock).beforeRequest(any(), same(contextMock));
+		inOrder.verify(listenerMock).afterRequest(any(), any(), same(contextMock));
+		inOrder.verifyNoMoreInteractions();
 	}
 
 	private ObjectNode response(int status, String body) {

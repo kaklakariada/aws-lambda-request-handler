@@ -15,10 +15,11 @@ import com.github.kaklakariada.aws.lambda.service.ServiceParams;
 
 public class Injector<P extends ServiceParams> {
 	private final ServiceCache<P> cache;
-	private P serviceParams;
+	private final Supplier<P> serviceParams;
 
-	public Injector(ServiceCache<P> cache) {
+	public Injector(ServiceCache<P> cache, Supplier<P> serviceParams) {
 		this.cache = cache;
+		this.serviceParams = serviceParams;
 	}
 
 	public void injectServices(LambdaController controller) {
@@ -32,22 +33,26 @@ public class Injector<P extends ServiceParams> {
 		final ParameterizedType type = (ParameterizedType) field.getGenericType();
 		assert type.getActualTypeArguments().length == 1;
 		final Type typeToInject = type.getActualTypeArguments()[0];
+		final Supplier<?> serviceSupplier = getServiceSupplier((Class<?>) typeToInject);
+		inject(controller, field, serviceSupplier);
+	}
+
+	private void inject(LambdaController controller, Field field, final Supplier<?> serviceSupplier) {
 		field.setAccessible(true);
 		try {
-			field.set(controller, getSupplier((Class<?>) typeToInject));
+			field.set(controller, serviceSupplier);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new InternalServerErrorException("Error injecting field " + field, e);
 		}
 	}
 
-	private <T> Supplier<T> getSupplier(Class<T> typeToInject) {
+	private <T> Supplier<T> getServiceSupplier(Class<T> typeToInject) {
 		return () -> {
-			assert serviceParams != null;
-			return cache.getService(typeToInject, serviceParams);
+			final P params = serviceParams.get();
+			if (params == null) {
+				throw new IllegalStateException("No service param found");
+			}
+			return cache.getService(typeToInject, params);
 		};
-	}
-
-	public void setServiceParams(P serviceParams) {
-		this.serviceParams = serviceParams;
 	}
 }

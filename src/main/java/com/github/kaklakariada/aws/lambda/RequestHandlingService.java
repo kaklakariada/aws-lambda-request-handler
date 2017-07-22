@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -35,37 +37,61 @@ import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.exception.BadRequestException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
 import com.github.kaklakariada.aws.lambda.exception.LambdaException;
+import com.github.kaklakariada.aws.lambda.inject.CurrentRequestParamsSupplier;
+import com.github.kaklakariada.aws.lambda.inject.Injector;
+import com.github.kaklakariada.aws.lambda.listener.DelegateListener;
+import com.github.kaklakariada.aws.lambda.listener.RequestProcessingListener;
 import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 import com.github.kaklakariada.aws.lambda.model.response.ApiGatewayResponse;
+import com.github.kaklakariada.aws.lambda.service.ServiceCache;
+import com.github.kaklakariada.aws.lambda.service.ServiceFactory;
+import com.github.kaklakariada.aws.lambda.service.ServiceParams;
 
 public class RequestHandlingService {
 	private static final Logger LOG = LoggerFactory.getLogger(RequestHandlingService.class);
 
 	private final ObjectMapper objectMapper;
 	private final ControllerAdapter handler;
+	private final RequestProcessingListener listener;
 
-	public static RequestHandlingService create(LambdaController controller) {
+	public static <P extends ServiceParams> RequestHandlingService create(LambdaController controller,
+			ServiceFactory<P> serviceFactory) {
+		final List<RequestProcessingListener> listeners = new ArrayList<>();
+		if (serviceFactory != null) {
+			final CurrentRequestParamsSupplier<P> serviceParamsSupplier = new CurrentRequestParamsSupplier<>(
+					serviceFactory);
+			listeners.add(serviceParamsSupplier);
+			final Injector<P> injector = new Injector<>(new ServiceCache<>(serviceFactory), serviceParamsSupplier);
+			injector.injectServices(controller);
+		}
 		final ControllerAdapter adapter = ControllerAdapter.create(controller);
-		return new RequestHandlingService(adapter);
+		return new RequestHandlingService(adapter, new DelegateListener(listeners));
 	}
 
-	RequestHandlingService(ControllerAdapter handler) {
-		this(new ObjectMapper(), handler);
+	RequestHandlingService(ControllerAdapter handler, RequestProcessingListener listener) {
+		this(new ObjectMapper(), handler, listener);
 	}
 
-	RequestHandlingService(ObjectMapper objectMapper, ControllerAdapter handler) {
+	RequestHandlingService(ObjectMapper objectMapper, ControllerAdapter handler, RequestProcessingListener listener) {
 		this.objectMapper = objectMapper;
 		this.handler = handler;
+		this.listener = listener;
 	}
 
 	public void handleRequest(InputStream input, OutputStream output, Context context) {
-		final ApiGatewayResponse response = handleRequest(input, context);
+		final ApiGatewayRequest request = parseRequest(input);
+		listener.beforeRequest(request, context);
+		final ApiGatewayResponse response = handleRequest(request, context);
+		listener.afterRequest(request, response, context);
 		sendResponse(output, response);
 	}
 
-	private ApiGatewayResponse handleRequest(InputStream input, Context context) {
+	private ApiGatewayRequest parseRequest(InputStream input) {
+		return parseJsonString(readStream(input), ApiGatewayRequest.class);
+	}
+
+	private ApiGatewayResponse handleRequest(final ApiGatewayRequest request, Context context) {
 		try {
-			final ApiGatewayRequest request = parseJsonString(readStream(input), ApiGatewayRequest.class);
 			final Object result = handler.handleRequest(request, context);
 			return new ApiGatewayResponse(serializeResult(result));
 		} catch (final LambdaException e) {
