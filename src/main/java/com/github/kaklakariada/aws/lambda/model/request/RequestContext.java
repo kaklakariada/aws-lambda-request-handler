@@ -23,10 +23,15 @@ public class RequestContext {
 	private String resourceId;
 	private String stage;
 	private String requestId;
+	private String extendedRequestId;
 	private Identity identity;
 	private String resourcePath;
 	private String httpMethod;
 	private String apiId;
+	// 22/Apr/2018:14:34:13 +0000
+	private String requestTime;
+	private String protocol;
+	private Long requestTimeEpoch;
 
 	public String getPath() {
 		return path;
@@ -48,6 +53,10 @@ public class RequestContext {
 		return requestId;
 	}
 
+	public String getExtendedRequestId() {
+		return extendedRequestId;
+	}
+
 	public Identity getIdentity() {
 		return identity;
 	}
@@ -64,10 +73,24 @@ public class RequestContext {
 		return apiId;
 	}
 
+	public String getRequestTime() {
+		return requestTime;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public Long getRequestTimeEpoch() {
+		return requestTimeEpoch;
+	}
+
 	@Override
 	public String toString() {
 		return "RequestContext [path=" + path + ", accountId=" + accountId + ", resourceId=" + resourceId + ", stage="
-				+ stage + ", requestId=" + requestId + ", identity=" + identity + ", resourcePath=" + resourcePath
-				+ ", httpMethod=" + httpMethod + ", apiId=" + apiId + "]";
+				+ stage + ", requestId=" + requestId + ", extendedRequestId=" + extendedRequestId + ", identity="
+				+ identity + ", resourcePath=" + resourcePath + ", httpMethod=" + httpMethod + ", apiId=" + apiId
+				+ ", requestTime=" + requestTime + ", protocol=" + protocol + ", requestTimeEpoch=" + requestTimeEpoch
+				+ "]";
 	}
 }

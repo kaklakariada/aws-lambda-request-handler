@@ -30,6 +30,7 @@ public class Identity {
 	private String userAgent;
 	private String user;
 	private String accessKey;
+	private String apiKeyId;
 
 	public String getCognitoIdentityPoolId() {
 		return cognitoIdentityPoolId;
@@ -79,13 +80,17 @@ public class Identity {
 		return accessKey;
 	}
 
+	public String getApiKeyId() {
+		return apiKeyId;
+	}
+
 	@Override
 	public String toString() {
 		return "Identity [cognitoIdentityPoolId=" + cognitoIdentityPoolId + ", accountId=" + accountId
 				+ ", cognitoIdentityId=" + cognitoIdentityId + ", caller=" + caller + ", apiKey=" + apiKey
 				+ ", sourceIp=" + sourceIp + ", cognitoAuthenticationType=" + cognitoAuthenticationType
 				+ ", cognitoAuthenticationProvider=" + cognitoAuthenticationProvider + ", userArn=" + userArn
-				+ ", userAgent=" + userAgent + ", user=" + user + "]";
+				+ ", userAgent=" + userAgent + ", user=" + user + ", accessKey=" + accessKey + ", apiKeyId=" + apiKeyId
+				+ "]";
 	}
-
 }
