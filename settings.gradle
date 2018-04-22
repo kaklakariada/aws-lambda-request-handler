@@ -1,2 +1,5 @@
 rootProject.name = 'aws-lambda-request-handler'
-include 'test-project'
+
+if(System.env['CI'] == null) {
+  include 'test-project'
+}
