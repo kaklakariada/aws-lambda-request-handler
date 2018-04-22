@@ -11,10 +11,10 @@ repositories {
 version = '0.0.1'
 
 serverless {
-    currentStage = 'test'
+    activeStage = 'test'
     defaultAwsProfile = deployAwsProfile
     defaultAwsRegion = awsRegion
-    defaultDeploymentBucket = awsDeploymentBucket
+    defaultDeployBucket = awsDeploymentBucket
     stages {
         test {
         }
