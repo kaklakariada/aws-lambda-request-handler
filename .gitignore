@@ -1,6 +1,8 @@
-.gradle/
-build/
-bin/
-.classpath
-.project
-org.eclipse.buildship.core.prefs
+/.gradle/
+/buildSrc/.gradle/
+/**/build/
+/**/bin/
+/**/.classpath
+/**/.project
+/**/.settings/org.eclipse.buildship.core.prefs
+/gradle.properties
