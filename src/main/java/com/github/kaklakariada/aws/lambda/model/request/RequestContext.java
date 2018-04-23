@@ -17,6 +17,8 @@
  */
 package com.github.kaklakariada.aws.lambda.model.request;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,6 +37,7 @@ public class RequestContext {
 	private String requestTime;
 	private String protocol;
 	private Long requestTimeEpoch;
+	private Map<String, String> authorizer;
 
 	public String getPath() {
 		return path;
@@ -88,12 +91,72 @@ public class RequestContext {
 		return requestTimeEpoch;
 	}
 
+	public Map<String, String> getAuthorizer() {
+		return authorizer;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public void setAccountId(String accountId) {
+		this.accountId = accountId;
+	}
+
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	}
+
+	public void setStage(String stage) {
+		this.stage = stage;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+
+	public void setExtendedRequestId(String extendedRequestId) {
+		this.extendedRequestId = extendedRequestId;
+	}
+
+	public void setIdentity(Identity identity) {
+		this.identity = identity;
+	}
+
+	public void setResourcePath(String resourcePath) {
+		this.resourcePath = resourcePath;
+	}
+
+	public void setHttpMethod(String httpMethod) {
+		this.httpMethod = httpMethod;
+	}
+
+	public void setApiId(String apiId) {
+		this.apiId = apiId;
+	}
+
+	public void setRequestTime(String requestTime) {
+		this.requestTime = requestTime;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public void setRequestTimeEpoch(Long requestTimeEpoch) {
+		this.requestTimeEpoch = requestTimeEpoch;
+	}
+
+	public void setAuthorizer(Map<String, String> authorizer) {
+		this.authorizer = authorizer;
+	}
+
 	@Override
 	public String toString() {
 		return "RequestContext [path=" + path + ", accountId=" + accountId + ", resourceId=" + resourceId + ", stage="
 				+ stage + ", requestId=" + requestId + ", extendedRequestId=" + extendedRequestId + ", identity="
 				+ identity + ", resourcePath=" + resourcePath + ", httpMethod=" + httpMethod + ", apiId=" + apiId
 				+ ", requestTime=" + requestTime + ", protocol=" + protocol + ", requestTimeEpoch=" + requestTimeEpoch
-				+ "]";
+				+ ", authorizer=" + authorizer + "]";
 	}
 }
