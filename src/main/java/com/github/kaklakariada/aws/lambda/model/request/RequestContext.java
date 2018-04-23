@@ -17,6 +17,9 @@
  */
 package com.github.kaklakariada.aws.lambda.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RequestContext {
 	private String path;
 	private String accountId;

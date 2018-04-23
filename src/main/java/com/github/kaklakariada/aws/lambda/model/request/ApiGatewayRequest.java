@@ -19,6 +19,9 @@ package com.github.kaklakariada.aws.lambda.model.request;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiGatewayRequest {
 
 	private String resource;
