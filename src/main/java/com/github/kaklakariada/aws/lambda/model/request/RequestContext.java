@@ -17,6 +17,8 @@
  */
 package com.github.kaklakariada.aws.lambda.model.request;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -92,7 +94,11 @@ public class RequestContext {
 	}
 
 	public Map<String, String> getAuthorizer() {
-		return authorizer;
+		return authorizer != null ? authorizer : emptyMap();
+	}
+
+	public String getAuthorizer(String field) {
+		return getAuthorizer().get(field);
 	}
 
 	public void setPath(String path) {

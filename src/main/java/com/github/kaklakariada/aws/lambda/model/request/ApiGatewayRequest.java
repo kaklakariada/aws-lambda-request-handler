@@ -17,6 +17,8 @@
  */
 package com.github.kaklakariada.aws.lambda.model.request;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -48,19 +50,35 @@ public class ApiGatewayRequest {
 	}
 
 	public Map<String, String> getHeaders() {
-		return headers;
+		return headers != null ? headers : emptyMap();
+	}
+
+	public String getHeader(String header) {
+		return getHeaders().get(header);
 	}
 
 	public Map<String, String> getQueryStringParameters() {
-		return queryStringParameters;
+		return queryStringParameters != null ? queryStringParameters : emptyMap();
+	}
+
+	public String getQueryStringParameter(String parameter) {
+		return getQueryStringParameters().get(parameter);
 	}
 
 	public Map<String, String> getPathParameters() {
-		return pathParameters;
+		return pathParameters != null ? pathParameters : emptyMap();
+	}
+
+	public String getPathParameter(String parameter) {
+		return getPathParameters().get(parameter);
 	}
 
 	public Map<String, String> getStageVariables() {
-		return stageVariables;
+		return stageVariables != null ? stageVariables : emptyMap();
+	}
+
+	public String getStageVariable(String variable) {
+		return getStageVariables().get(variable);
 	}
 
 	public RequestContext getRequestContext() {
