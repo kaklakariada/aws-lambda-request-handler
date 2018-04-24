@@ -44,6 +44,6 @@ public class ApiGatewayResponse {
 	}
 
 	public String getBody() {
-		return body.toString();
+		return body;
 	}
 }
