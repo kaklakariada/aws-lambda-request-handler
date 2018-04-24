@@ -18,13 +18,14 @@
 package com.github.kaklakariada.aws.lambda.inject;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.function.Supplier;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -56,7 +57,7 @@ public class InjectorTest {
 	private Injector<MyServiceParams> injector;
 	private MyLambdaController controller;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		injector = new Injector<>(cacheMock, serviceParamsSupplierMock);
@@ -78,11 +79,14 @@ public class InjectorTest {
 		assertThat(controller.handleRequest(), equalTo("Service B: " + VALUE2));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testServiceParamsSupplierReturnsNull() {
 		injector.injectServices(controller);
 
 		when(serviceParamsSupplierMock.get()).thenReturn(null);
-		controller.handleRequest();
+
+		assertThrows(IllegalStateException.class, () -> {
+			controller.handleRequest();
+		});
 	}
 }

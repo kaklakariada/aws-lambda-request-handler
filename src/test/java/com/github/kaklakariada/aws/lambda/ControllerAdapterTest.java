@@ -29,8 +29,6 @@ import java.lang.reflect.Parameter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -41,7 +39,6 @@ import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
 import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
-@RunWith(JUnitPlatform.class)
 public class ControllerAdapterTest {
 
 	@Mock

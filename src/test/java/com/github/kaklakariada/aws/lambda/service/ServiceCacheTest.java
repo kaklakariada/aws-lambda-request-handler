@@ -19,12 +19,12 @@ package com.github.kaklakariada.aws.lambda.service;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.kaklakariada.aws.lambda.example.MyServiceB;
 import com.github.kaklakariada.aws.lambda.example.MyServiceFactory;
@@ -44,7 +44,7 @@ public class ServiceCacheTest {
 	private ApiGatewayRequest requestA;
 	private ApiGatewayRequest requestB;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		cache = new ServiceCache<>(new MyServiceFactory());
 		requestA = new ApiGatewayRequest();

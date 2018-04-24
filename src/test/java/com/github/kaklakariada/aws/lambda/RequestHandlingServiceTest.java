@@ -30,8 +30,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -45,7 +43,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kaklakariada.aws.lambda.listener.RequestProcessingListener;
 import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
-@RunWith(JUnitPlatform.class)
 public class RequestHandlingServiceTest {
 
 	@Mock
