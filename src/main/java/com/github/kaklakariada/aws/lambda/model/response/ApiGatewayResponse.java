@@ -17,8 +17,9 @@
  */
 package com.github.kaklakariada.aws.lambda.model.response;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,6 +34,10 @@ public class ApiGatewayResponse {
 		this(statusCode, headers, body, false);
 	}
 
+	public ApiGatewayResponse(int statusCode, Map<String, String> headers, byte[] body) {
+		this(statusCode, headers, base64Encode(body), true);
+	}
+
 	private ApiGatewayResponse(int statusCode, Map<String, String> headers, String body, boolean base64Encoded) {
 		this.statusCode = statusCode;
 		this.headers = headers;
@@ -40,12 +45,20 @@ public class ApiGatewayResponse {
 		this.base64Encoded = base64Encoded;
 	}
 
+	public static ApiGatewayResponse ok(Map<String, String> headers, String body) {
+		return new ApiGatewayResponse(200, headers, body);
+	}
+
 	public static ApiGatewayResponse ok(String body) {
-		return new ApiGatewayResponse(200, Collections.emptyMap(), body);
+		return ok(emptyMap(), body);
+	}
+
+	public static ApiGatewayResponse ok(Map<String, String> headers, byte[] body) {
+		return new ApiGatewayResponse(200, headers, base64Encode(body), true);
 	}
 
 	public static ApiGatewayResponse ok(byte[] body) {
-		return new ApiGatewayResponse(200, Collections.emptyMap(), base64Encode(body), true);
+		return ok(emptyMap(), body);
 	}
 
 	private static String base64Encode(byte[] body) {
