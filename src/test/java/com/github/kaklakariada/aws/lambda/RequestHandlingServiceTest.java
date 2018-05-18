@@ -91,6 +91,7 @@ public class RequestHandlingServiceTest {
 		response.set("statusCode", jsonFactory.numberNode(status));
 		response.set("headers", headers);
 		response.set("body", jsonFactory.textNode(body));
+		response.set("isBase64Encoded", jsonFactory.booleanNode(false));
 		return response;
 	}
 

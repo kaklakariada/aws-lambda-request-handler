@@ -93,7 +93,8 @@ public class RequestHandlingService {
 	private ApiGatewayResponse handleRequest(final ApiGatewayRequest request, Context context) {
 		try {
 			final Object result = handler.handleRequest(request, context);
-			return new ApiGatewayResponse(serializeResult(result));
+			final String responseBody = serializeResult(result);
+			return ApiGatewayResponse.ok(responseBody);
 		} catch (final LambdaException e) {
 			LOG.error("Error processing request: " + e.getMessage());
 			return buildErrorResponse(e, context);

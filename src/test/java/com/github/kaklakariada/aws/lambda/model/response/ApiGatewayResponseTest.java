@@ -21,20 +21,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.Base64;
+
 import org.junit.jupiter.api.Test;
 
 class ApiGatewayResponseTest {
 
 	@Test
-	void testConstructorWithBody() {
-		final ApiGatewayResponse response = new ApiGatewayResponse("body");
+	void testConstructorWithStringBody() {
+		final ApiGatewayResponse response = ApiGatewayResponse.ok("body");
 		assertThat(response.getBody(), equalTo("body"));
 		assertThat(response.getStatusCode(), equalTo(200));
 		assertThat(response.getHeaders().size(), equalTo(0));
+		assertThat(response.isBase64Encoded(), equalTo(false));
 	}
 
 	@Test
-	void testNullBody() {
-		assertThat(new ApiGatewayResponse(null).getBody(), nullValue());
+	void testNullStringBody() {
+		assertThat(ApiGatewayResponse.ok((String) null).getBody(), nullValue());
+	}
+
+	@Test
+	void testConstructorWithBinaryBody() {
+		final byte[] body = "body".getBytes();
+		final ApiGatewayResponse response = ApiGatewayResponse.ok(body);
+		assertThat(response.getBody(), equalTo("Ym9keQ=="));
+		assertThat(Base64.getDecoder().decode(response.getBody()), equalTo(body));
+		assertThat(response.getStatusCode(), equalTo(200));
+		assertThat(response.getHeaders().size(), equalTo(0));
+		assertThat(response.isBase64Encoded(), equalTo(true));
 	}
 }

@@ -17,22 +17,39 @@
  */
 package com.github.kaklakariada.aws.lambda.model.response;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ApiGatewayResponse {
 	private final int statusCode;
 	private final Map<String, String> headers;
 	private final String body;
+	private final boolean base64Encoded;
 
 	public ApiGatewayResponse(int statusCode, Map<String, String> headers, String body) {
+		this(statusCode, headers, body, false);
+	}
+
+	private ApiGatewayResponse(int statusCode, Map<String, String> headers, String body, boolean base64Encoded) {
 		this.statusCode = statusCode;
 		this.headers = headers;
 		this.body = body;
+		this.base64Encoded = base64Encoded;
 	}
 
-	public ApiGatewayResponse(String body) {
-		this(200, Collections.emptyMap(), body);
+	public static ApiGatewayResponse ok(String body) {
+		return new ApiGatewayResponse(200, Collections.emptyMap(), body);
+	}
+
+	public static ApiGatewayResponse ok(byte[] body) {
+		return new ApiGatewayResponse(200, Collections.emptyMap(), base64Encode(body), true);
+	}
+
+	private static String base64Encode(byte[] body) {
+		return Base64.getEncoder().encodeToString(body);
 	}
 
 	public int getStatusCode() {
@@ -45,5 +62,10 @@ public class ApiGatewayResponse {
 
 	public String getBody() {
 		return body;
+	}
+
+	@JsonProperty("isBase64Encoded")
+	public boolean isBase64Encoded() {
+		return base64Encoded;
 	}
 }
