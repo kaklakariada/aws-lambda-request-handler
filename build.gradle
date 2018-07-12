@@ -1,7 +1,7 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
-    id 'com.jfrog.bintray' version '1.8.0'
+    id 'com.jfrog.bintray' version '1.8.4'
     id 'com.github.hierynomus.license' version '0.14.0'
 }
 
@@ -9,17 +9,17 @@ repositories {
     jcenter()
 }
 
-version = '0.3.1'
+version = '0.3.2'
 group = 'com.github.kaklakariada'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    jacksonVersion = '2.9.5'
-    junit4Version = '4.12'
-    junitPlatformVersion = '1.2.0-M1'
-    junitJupiterVersion = '5.2.0-M1'
+    jacksonVersion = '2.9.6'
     log4jVersion = '2.11.0'
+    junitPlatformVersion = '1.2.0'
+    junitJupiterVersion = '5.2.0'
+    mockitoVersion = '2.19.0'
 }
 
 compileTestJava {
@@ -27,12 +27,12 @@ compileTestJava {
 }
 
 dependencies {
-    compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
-    compile 'org.slf4j:slf4j-api:1.7.25'
-    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    compile "javax.inject:javax.inject:1"
+    api 'org.slf4j:slf4j-api:1.7.25'
+    api "javax.inject:javax.inject:1"
+    api 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     
-    testCompile 'org.mockito:mockito-core:2.18.3'
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
     
     testCompile "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
@@ -40,6 +40,10 @@ dependencies {
 
     testRuntime "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     testRuntime "org.apache.logging.log4j:log4j-jul:${log4jVersion}"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 task sourceJar(type: Jar) {
