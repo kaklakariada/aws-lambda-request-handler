@@ -12,19 +12,18 @@ import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class EchoHandler extends LambdaRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EchoHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EchoHandler.class);
 
-    public EchoHandler() {
-        super(new EchoController());
-    }
+	public EchoHandler() {
+		super(new EchoController());
+	}
 
-    public static class EchoController implements LambdaController {
-        @RequestHandlerMethod
-        public EchoResponse handleRequest(@RequestBody EchoRequest body, Context context, ApiGatewayRequest request) {
-            LOG.info("Request body: {}", body);
-            LOG.info("Context     : {}", context);
-            LOG.info("Request     : {}", request);
-            return new EchoResponse("empty", body, request);
-        }
-    }
+	public static class EchoController implements LambdaController {
+		@RequestHandlerMethod
+		public EchoResponse handleRequest(@RequestBody EchoRequest body, Context context, ApiGatewayRequest request) {
+			final EchoResponse response = new EchoResponse("empty", body, request);
+			LOG.info("Request body: {}\nContext: {}\nRequest: {}\nResponse: {}", body, context, request, response);
+			return response;
+		}
+	}
 }
