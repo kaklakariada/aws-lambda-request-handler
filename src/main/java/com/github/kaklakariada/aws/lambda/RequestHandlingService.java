@@ -74,6 +74,7 @@ public class RequestHandlingService {
 
 	private static ObjectMapper createObjectMapper() {
 		final ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, FAIL_ON_UNKNOWN_JSON_PROPERTIES);
 		return objectMapper;
 	}
 

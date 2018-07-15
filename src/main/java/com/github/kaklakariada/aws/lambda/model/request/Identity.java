@@ -17,9 +17,6 @@
  */
 package com.github.kaklakariada.aws.lambda.model.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Identity {
 	private String cognitoIdentityPoolId;
 	private String accountId;
