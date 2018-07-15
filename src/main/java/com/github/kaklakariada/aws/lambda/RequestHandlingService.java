@@ -65,7 +65,10 @@ public class RequestHandlingService {
 					serviceFactory);
 			listeners.add(serviceParamsSupplier);
 			final Injector<P> injector = new Injector<>(new ServiceCache<>(serviceFactory), serviceParamsSupplier);
+			LOG.debug("Injecting services into controller {} using service factory {}", controller, serviceFactory);
 			injector.injectServices(controller);
+		} else {
+			LOG.debug("No service factory available, don't inject services");
 		}
 		final ObjectMapper objectMapper = createObjectMapper();
 		final ControllerAdapter adapter = ControllerAdapter.create(objectMapper, controller);
@@ -102,7 +105,7 @@ public class RequestHandlingService {
 			final String responseBody = serializeResult(result);
 			return ApiGatewayResponse.ok(responseBody);
 		} catch (final LambdaException e) {
-			LOG.error("Error processing request: {}", e.getMessage());
+			LOG.error("Error processing request: {}", e.getMessage(), e);
 			return buildErrorResponse(e, context);
 		} catch (final Exception e) {
 			LOG.error("Error processing request: " + e.getMessage(), e);

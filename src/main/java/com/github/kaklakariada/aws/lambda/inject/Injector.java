@@ -25,12 +25,17 @@ import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
 import com.github.kaklakariada.aws.lambda.service.ServiceCache;
 import com.github.kaklakariada.aws.lambda.service.ServiceParams;
 
 public class Injector<P extends ServiceParams> {
+	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
+
 	private final ServiceCache<P> cache;
 	private final Supplier<P> serviceParams;
 
@@ -42,15 +47,19 @@ public class Injector<P extends ServiceParams> {
 	public void injectServices(LambdaController controller) {
 		Arrays.stream(controller.getClass().getDeclaredFields())
 				.filter(field -> field.getAnnotation(Inject.class) != null) //
-				.filter(field -> field.getType().equals(Supplier.class)) //
 				.forEach(field -> inject(controller, field));
 	}
 
 	private void inject(LambdaController controller, Field field) {
+		if (!field.getType().equals(Supplier.class)) {
+			throw new IllegalStateException("Field " + field.getName() + " has unsupported type "
+					+ field.getType().getName() + ", only Supplier is supported");
+		}
 		final ParameterizedType type = (ParameterizedType) field.getGenericType();
 		assert type.getActualTypeArguments().length == 1;
 		final Type typeToInject = type.getActualTypeArguments()[0];
 		final Supplier<?> serviceSupplier = getServiceSupplier((Class<?>) typeToInject);
+		LOG.debug("Injecting supplier of type {} into field {}", typeToInject.getTypeName(), field.getName());
 		inject(controller, field, serviceSupplier);
 	}
 

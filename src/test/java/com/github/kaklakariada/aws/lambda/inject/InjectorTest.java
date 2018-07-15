@@ -17,6 +17,7 @@
  */
 package com.github.kaklakariada.aws.lambda.inject;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.github.kaklakariada.aws.lambda.example.MyLambdaController;
+import com.github.kaklakariada.aws.lambda.example.MyLambdaControllerWithUnsupportedServiceType;
 import com.github.kaklakariada.aws.lambda.example.MyServiceB;
 import com.github.kaklakariada.aws.lambda.example.MyServiceParams;
 import com.github.kaklakariada.aws.lambda.service.ServiceCache;
@@ -77,6 +79,14 @@ public class InjectorTest {
 
 		when(serviceParamsSupplierMock.get()).thenReturn(param2Mock);
 		assertThat(controller.handleRequest(), equalTo("Service B: " + VALUE2));
+	}
+
+	@Test
+	public void testUnsupportedServiceTypeInjected() {
+		final IllegalStateException exception = assertThrows(IllegalStateException.class,
+				() -> injector.injectServices(new MyLambdaControllerWithUnsupportedServiceType()));
+		assertThat(exception.getMessage(), containsString(
+				"Field serviceB has unsupported type com.github.kaklakariada.aws.lambda.example.MyServiceB, only Supplier is supported"));
 	}
 
 	@Test

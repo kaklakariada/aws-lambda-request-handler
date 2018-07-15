@@ -11,5 +11,6 @@
         <Root level="info">
             <AppenderRef ref="Lambda" />
         </Root>
+        <Logger name="com.github.kaklakariada" level="trace" />
     </Loggers>
 </Configuration>

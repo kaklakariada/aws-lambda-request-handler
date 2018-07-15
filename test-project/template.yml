@@ -30,6 +30,19 @@ Resources:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EchoFunction.Arn}/invocations
 
+          /echoservice:
+            get:
+              description: Returns an echo
+              responses:
+                default:
+                  statusCode: 200
+              x-amazon-apigateway-integration:
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ServiceBasedEchoFunction.Arn}/invocations
+
           /echo/{id}/echo:
             get:
               description: Returns an echo by id
@@ -57,6 +70,24 @@ Resources:
           Properties:
             RestApiId: !Ref ApiGatewayApi
             Path: /echo
+            Method: GET
+
+  ServiceBasedEchoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.echo.ServiceBasedEchoHandler
+      Runtime: java8
+      Timeout: 15
+      Environment:
+        Variables:
+          CODE_URI: ${CodeUri}
+      CodeUri: ${CodeUri}
+      Events:
+        GetRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /echoservice
             Method: GET
 
   EchoWithPathFunction:

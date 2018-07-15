@@ -20,6 +20,7 @@ public class EchoHandler extends LambdaRequestHandler {
 	}
 
 	public static class EchoController implements LambdaController {
+
 		@RequestHandlerMethod
 		public EchoResponse handleRequest(@RequestBody EchoRequest body, Context context, ApiGatewayRequest request,
 				@HeaderValue("User-Agent") String userAgent) {
