@@ -17,6 +17,7 @@
  */
 package com.github.kaklakariada.aws.lambda;
 
+import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
@@ -41,16 +42,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kaklakariada.aws.lambda.listener.RequestProcessingListener;
-import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
+import com.github.kaklakariada.aws.lambda.model.response.ApiGatewayResponse;
 
 public class RequestHandlingServiceTest {
+
+	private static final String RESPONSE_MESSAGE = "msg";
 
 	@Mock
 	private ControllerAdapter controllerMock;
 	@Mock
 	private Context contextMock;
-	@Mock
-	private ApiGatewayRequest apiGatewayRequestMock;
 	@Mock
 	private TestResponse responseMock;
 	@Mock
@@ -66,13 +67,20 @@ public class RequestHandlingServiceTest {
 		objectMapper = new ObjectMapper();
 		jsonFactory = JsonNodeFactory.instance;
 		service = new RequestHandlingService(objectMapper, controllerMock, listenerMock);
-		when(controllerMock.handleRequest(same(apiGatewayRequestMock), same(contextMock)))
-				.thenReturn(new TestResponse());
+		when(controllerMock.handleRequest(any(), same(contextMock))).thenReturn(new TestResponse(RESPONSE_MESSAGE));
 	}
 
 	@Test
 	public void testRequest() {
-		assertEquals(response(200, "null"), handleRequest(jsonFactory.objectNode()));
+		assertEquals(response(200, "{\"message\":\"" + RESPONSE_MESSAGE + "\"}"),
+				handleRequest(jsonFactory.objectNode()));
+	}
+
+	@Test
+	public void testRequestReturnApiGatewayResponseUnchanged() {
+		final ApiGatewayResponse response = new ApiGatewayResponse(201, emptyMap(), "response2");
+		when(controllerMock.handleRequest(any(), same(contextMock))).thenReturn(response);
+		assertEquals(response(201, "response2"), handleRequest(jsonFactory.objectNode()));
 	}
 
 	@Test
@@ -117,6 +125,15 @@ public class RequestHandlingServiceTest {
 		return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	private static class TestResponse {
+	static class TestResponse {
+		private final String message;
+
+		TestResponse(String message) {
+			this.message = message;
+		}
+
+		public String getMessage() {
+			return message;
+		}
 	}
 }

@@ -102,6 +102,10 @@ public class RequestHandlingService {
 	private ApiGatewayResponse handleRequest(final ApiGatewayRequest request, Context context) {
 		try {
 			final Object result = handler.handleRequest(request, context);
+			if (result instanceof ApiGatewayResponse) {
+				LOG.trace("Result type is already ApiGatewayResponse: don't serialize body.");
+				return (ApiGatewayResponse) result;
+			}
 			final String responseBody = serializeResult(result);
 			return ApiGatewayResponse.ok(responseBody);
 		} catch (final LambdaException e) {
