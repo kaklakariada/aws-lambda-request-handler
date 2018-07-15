@@ -28,6 +28,7 @@ import com.github.kaklakariada.aws.lambda.arg.adapter.ApiGatewayRequestAdapaterF
 import com.github.kaklakariada.aws.lambda.arg.adapter.ArgAdapterFactory;
 import com.github.kaklakariada.aws.lambda.arg.adapter.BodyArgAdapterFactory;
 import com.github.kaklakariada.aws.lambda.arg.adapter.ContextArgAdapaterFactory;
+import com.github.kaklakariada.aws.lambda.arg.adapter.HeaderValueArgAdapaterFactory;
 import com.github.kaklakariada.aws.lambda.arg.adapter.PathParameterArgAdapaterFactory;
 import com.github.kaklakariada.aws.lambda.arg.adapter.QueryStringArgAdapaterFactory;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
@@ -41,9 +42,12 @@ class SingleArgValueAdapterFactory {
 	}
 
 	SingleArgValueAdapterFactory(ObjectMapper objectMapper) {
-		this(asList(new BodyArgAdapterFactory(objectMapper), new ApiGatewayRequestAdapaterFactory(),
-				new ContextArgAdapaterFactory(), new PathParameterArgAdapaterFactory(),
-				new QueryStringArgAdapaterFactory()));
+		this(asList(new BodyArgAdapterFactory(objectMapper), //
+				new ApiGatewayRequestAdapaterFactory(), //
+				new ContextArgAdapaterFactory(), //
+				new PathParameterArgAdapaterFactory(), //
+				new QueryStringArgAdapaterFactory(), //
+				new HeaderValueArgAdapaterFactory()));
 	}
 
 	SingleArgValueAdapter getAdapter(Parameter param) {

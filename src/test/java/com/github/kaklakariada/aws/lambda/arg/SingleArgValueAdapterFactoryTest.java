@@ -39,6 +39,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kaklakariada.aws.lambda.controller.HeaderValue;
 import com.github.kaklakariada.aws.lambda.controller.PathParameter;
 import com.github.kaklakariada.aws.lambda.controller.QueryStringParameter;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
@@ -47,6 +48,8 @@ import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class SingleArgValueAdapterFactoryTest {
 
+	private static final String HEADER_VALUE_PARAM_VALUE = "headerValueParamValue";
+	private static final String HEADER_VALUE_PARAM_NAME = "headerValueParamName";
 	private static final String QUERY_STRING_PARAM_VALUE = "queryStringParamValue";
 	private static final String QUERY_STRING_PARAM_NAME = "queryStringParamName";
 	private static final String PATH_PARAM_NAME = "pathParamName";
@@ -71,6 +74,8 @@ public class SingleArgValueAdapterFactoryTest {
 		when(apiGatewayRequestMock.getQueryStringParameters())
 				.thenReturn(singletonMap(QUERY_STRING_PARAM_NAME, QUERY_STRING_PARAM_VALUE));
 		when(apiGatewayRequestMock.getPathParameters()).thenReturn(singletonMap(PATH_PARAM_NAME, PATH_PARAM_VALUE));
+		when(apiGatewayRequestMock.getHeaders())
+				.thenReturn(singletonMap(HEADER_VALUE_PARAM_NAME, HEADER_VALUE_PARAM_VALUE));
 		when(apiGatewayRequestMock.getBody()).thenReturn(BODY_CONTENT);
 		when(objectMapperMock.readValue(BODY_CONTENT, TestRequest.class)).thenReturn(requestBodyMock);
 	}
@@ -110,6 +115,25 @@ public class SingleArgValueAdapterFactoryTest {
 	}
 
 	void methodWithBodyTypeParam(@RequestBody TestRequest body) {
+
+	}
+
+	@Test
+	public void testHeaderValueParameter() {
+		assertEquals(HEADER_VALUE_PARAM_VALUE, runAdapter(getParam("methodWithHeaderValueParam", String.class)));
+	}
+
+	void methodWithHeaderValueParam(@HeaderValue(HEADER_VALUE_PARAM_NAME) String value) {
+
+	}
+
+	@Test
+	public void testHeaderValueParameterWrongParamType() {
+		assertConfigurationError(getParam("methodWithHeaderValueParamWithWrongType", Integer.class),
+				startsWith("None of the arg adapter factories supports parameter"));
+	}
+
+	void methodWithHeaderValueParamWithWrongType(@HeaderValue(HEADER_VALUE_PARAM_NAME) Integer value) {
 
 	}
 

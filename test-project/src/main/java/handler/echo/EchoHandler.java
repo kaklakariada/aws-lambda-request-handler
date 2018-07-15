@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.github.kaklakariada.aws.lambda.LambdaRequestHandler;
+import com.github.kaklakariada.aws.lambda.controller.HeaderValue;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.controller.RequestBody;
 import com.github.kaklakariada.aws.lambda.controller.RequestHandlerMethod;
@@ -20,9 +21,11 @@ public class EchoHandler extends LambdaRequestHandler {
 
 	public static class EchoController implements LambdaController {
 		@RequestHandlerMethod
-		public EchoResponse handleRequest(@RequestBody EchoRequest body, Context context, ApiGatewayRequest request) {
+		public EchoResponse handleRequest(@RequestBody EchoRequest body, Context context, ApiGatewayRequest request,
+				@HeaderValue("User-Agent") String userAgent) {
 			final EchoResponse response = new EchoResponse("empty", body, request);
 			LOG.info("Request body: {}\nContext: {}\nRequest: {}\nResponse: {}", body, context, request, response);
+			LOG.info("User agent: {}", userAgent);
 			return response;
 		}
 	}
