@@ -49,6 +49,7 @@ Resources:
     Properties:
       Handler: handler.echo.EchoHandler
       Runtime: java8
+      Timeout: 15
       CodeUri: ${CodeUri}
       Events:
         GetRequest:
@@ -63,6 +64,7 @@ Resources:
     Properties:
       Handler: handler.echo.EchoHandler
       Runtime: java8
+      Timeout: 15
       CodeUri: ${CodeUri}
       Events:
         GetRequest:
