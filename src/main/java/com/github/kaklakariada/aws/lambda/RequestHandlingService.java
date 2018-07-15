@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.exception.BadRequestException;
@@ -50,6 +51,8 @@ import com.github.kaklakariada.aws.lambda.service.ServiceParams;
 public class RequestHandlingService {
 	private static final Logger LOG = LoggerFactory.getLogger(RequestHandlingService.class);
 
+	private static final boolean FAIL_ON_UNKNOWN_JSON_PROPERTIES = false;
+
 	private final ObjectMapper objectMapper;
 	private final ControllerAdapter handler;
 	private final RequestProcessingListener listener;
@@ -64,12 +67,14 @@ public class RequestHandlingService {
 			final Injector<P> injector = new Injector<>(new ServiceCache<>(serviceFactory), serviceParamsSupplier);
 			injector.injectServices(controller);
 		}
-		final ControllerAdapter adapter = ControllerAdapter.create(controller);
-		return new RequestHandlingService(adapter, new DelegateListener(listeners));
+		final ObjectMapper objectMapper = createObjectMapper();
+		final ControllerAdapter adapter = ControllerAdapter.create(objectMapper, controller);
+		return new RequestHandlingService(objectMapper, adapter, new DelegateListener(listeners));
 	}
 
-	RequestHandlingService(ControllerAdapter handler, RequestProcessingListener listener) {
-		this(new ObjectMapper(), handler, listener);
+	private static ObjectMapper createObjectMapper() {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		return objectMapper;
 	}
 
 	RequestHandlingService(ObjectMapper objectMapper, ControllerAdapter handler, RequestProcessingListener listener) {

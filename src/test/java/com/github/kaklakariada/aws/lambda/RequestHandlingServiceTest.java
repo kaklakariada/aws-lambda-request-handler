@@ -65,7 +65,7 @@ public class RequestHandlingServiceTest {
 		MockitoAnnotations.initMocks(this);
 		objectMapper = new ObjectMapper();
 		jsonFactory = JsonNodeFactory.instance;
-		service = new RequestHandlingService(controllerMock, listenerMock);
+		service = new RequestHandlingService(objectMapper, controllerMock, listenerMock);
 		when(controllerMock.handleRequest(same(apiGatewayRequestMock), same(contextMock)))
 				.thenReturn(new TestResponse());
 	}

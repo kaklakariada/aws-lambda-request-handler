@@ -46,9 +46,9 @@ public class ControllerAdapter {
 		this.argValueAdapter = argValueAdapter;
 	}
 
-	public static ControllerAdapter create(LambdaController controller) {
+	public static ControllerAdapter create(ObjectMapper objectMapper, LambdaController controller) {
 		final Method handlerMethod = getHandlerMethod(controller);
-		final AllArgValueAdapter argValueAdapter = getArgValueAdapter(handlerMethod);
+		final AllArgValueAdapter argValueAdapter = getArgValueAdapter(objectMapper, handlerMethod);
 		return new ControllerAdapter(controller, handlerMethod, argValueAdapter);
 	}
 
@@ -62,8 +62,8 @@ public class ControllerAdapter {
 		return handlerMethods.get(0);
 	}
 
-	private static <I> AllArgValueAdapter getArgValueAdapter(Method handlerMethod) {
-		return new AllArgValueAdapterFactory(new ObjectMapper()).getAdapter(handlerMethod);
+	private static <I> AllArgValueAdapter getArgValueAdapter(ObjectMapper objectMapper, Method handlerMethod) {
+		return new AllArgValueAdapterFactory(objectMapper).getAdapter(handlerMethod);
 	}
 
 	public Object handleRequest(ApiGatewayRequest request, Context context) {

@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.controller.RequestHandlerMethod;
 import com.github.kaklakariada.aws.lambda.exception.ConfigurationErrorException;
@@ -48,9 +49,12 @@ public class ControllerAdapterTest {
 	@Mock
 	private TestResponse responseMock;
 
+	private ObjectMapper objectMapper;
+
 	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		objectMapper = new ObjectMapper();
 	}
 
 	@Test
@@ -86,8 +90,7 @@ public class ControllerAdapterTest {
 	@Test
 	public void testVoidHandlerMethodReturnsNull() {
 		final LambdaControllerVoidHandlerMethod controllerMock = mock(LambdaControllerVoidHandlerMethod.class);
-		final Object result = ControllerAdapter.create(controllerMock).handleRequest(apiGatewayRequestMock,
-				contextMock);
+		final Object result = create(controllerMock).handleRequest(apiGatewayRequestMock, contextMock);
 		assertNull(result);
 		verify(controllerMock).handler1();
 	}
@@ -109,7 +112,7 @@ public class ControllerAdapterTest {
 	}
 
 	private Object executeHandlerMethod(final LambdaController controllerMock) {
-		final ControllerAdapter adapter = ControllerAdapter.create(controllerMock);
+		final ControllerAdapter adapter = create(controllerMock);
 		return adapter.handleRequest(apiGatewayRequestMock, contextMock);
 	}
 
@@ -119,12 +122,16 @@ public class ControllerAdapterTest {
 		final RuntimeException cause = new RuntimeException("expected");
 		when(controllerMock.handler1()).thenThrow(cause);
 
-		final ControllerAdapter adapter = ControllerAdapter.create(controllerMock);
+		final ControllerAdapter adapter = create(controllerMock);
 
 		final InternalServerErrorException exception = assertThrows(InternalServerErrorException.class,
 				() -> adapter.handleRequest(apiGatewayRequestMock, contextMock));
 		assertSame(cause, exception.getCause().getCause());
 		assertEquals("Error invoking handler method", exception.getErrorMessage());
+	}
+
+	private ControllerAdapter create(final LambdaController controllerMock) {
+		return ControllerAdapter.create(objectMapper, controllerMock);
 	}
 
 	private void assertHandlerMethodConfigError(final LambdaController controller) {
@@ -135,7 +142,7 @@ public class ControllerAdapterTest {
 
 	private void assertConfigError(final LambdaController controller, String expectedErrorMessage) {
 		final ConfigurationErrorException exception = assertThrows(ConfigurationErrorException.class,
-				() -> ControllerAdapter.create(controller));
+				() -> create(controller));
 
 		assertEquals(expectedErrorMessage, exception.getErrorMessage());
 	}
