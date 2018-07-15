@@ -62,7 +62,7 @@ public class ControllerAdapter {
 		return handlerMethods.get(0);
 	}
 
-	private static <I> AllArgValueAdapter getArgValueAdapter(ObjectMapper objectMapper, Method handlerMethod) {
+	private static AllArgValueAdapter getArgValueAdapter(ObjectMapper objectMapper, Method handlerMethod) {
 		return new AllArgValueAdapterFactory(objectMapper).getAdapter(handlerMethod);
 	}
 

@@ -49,9 +49,7 @@ public class BodyArgAdapterFactory extends ArgAdapterFactory {
 	@Override
 	public SingleArgValueAdapter createAdapter(Parameter param) {
 		final Class<?> bodyType = param.getType();
-		return (ApiGatewayRequest request, Context context) -> {
-			return parseBody(request, bodyType);
-		};
+		return (ApiGatewayRequest request, Context context) -> parseBody(request, bodyType);
 	}
 
 	private Object parseBody(ApiGatewayRequest request, Class<?> bodyType) {

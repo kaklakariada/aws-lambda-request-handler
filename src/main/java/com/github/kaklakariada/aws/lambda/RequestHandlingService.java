@@ -102,7 +102,7 @@ public class RequestHandlingService {
 			final String responseBody = serializeResult(result);
 			return ApiGatewayResponse.ok(responseBody);
 		} catch (final LambdaException e) {
-			LOG.error("Error processing request: " + e.getMessage());
+			LOG.error("Error processing request: {}", e.getMessage());
 			return buildErrorResponse(e, context);
 		} catch (final Exception e) {
 			LOG.error("Error processing request: " + e.getMessage(), e);

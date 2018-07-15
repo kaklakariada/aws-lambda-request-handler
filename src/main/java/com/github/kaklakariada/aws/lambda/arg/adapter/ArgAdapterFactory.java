@@ -44,7 +44,7 @@ public abstract class ArgAdapterFactory {
 			return argTypeSupported(param, supportedArgType);
 		}
 		final boolean annotationSupported = param.getAnnotation(supportedArgAnnotation) != null;
-		if (supportedArgType != null && supportedArgAnnotation != null) {
+		if (supportedArgType != null) {
 			return argTypeSupported(param, supportedArgType) && annotationSupported;
 		}
 		return annotationSupported;
