@@ -23,6 +23,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
+
+/**
+ * Marks a method of a {@link LambdaController} as the request handler.
+ * Supported method arguments:
+ * <ul>
+ * <li>Type {@link ApiGatewayRequest}
+ * <li>Type {@link Context}
+ * <li>Argument annotation {@link RequestBody}
+ * <li>Argument annotation {@link HeaderValue}
+ * <li>Argument annotation {@link PathParameter}
+ * <li>Argument annotation {@link QueryStringParameter}
+ * </ul>
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface RequestHandlerMethod {

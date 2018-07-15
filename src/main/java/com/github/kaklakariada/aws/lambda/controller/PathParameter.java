@@ -23,6 +23,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Get the path parameter with the given name.
+ */
 @Retention(RUNTIME)
 @Target(PARAMETER)
 public @interface PathParameter {

@@ -17,5 +17,9 @@
  */
 package com.github.kaklakariada.aws.lambda.controller;
 
+/**
+ * Marker interface for lambda controllers. Controller must have exactly one
+ * method annotated with {@link RequestHandlerMethod}.
+ */
 public interface LambdaController {
 }

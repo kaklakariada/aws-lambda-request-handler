@@ -23,6 +23,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Get the request body.
+ */
 @Retention(RUNTIME)
 @Target(PARAMETER)
 public @interface RequestBody {
