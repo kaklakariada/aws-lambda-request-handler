@@ -9,6 +9,18 @@ Resources:
       StageName: ${stage}
       Variables:
         stage: ${stage}
+      MethodSettings: [{
+        "LoggingLevel": "INFO",
+        "MetricsEnabled": False,
+        "DataTraceEnabled": False,
+        "ResourcePath": "/*",
+        "HttpMethod": "*"
+      }]
+      EndpointConfiguration: REGIONAL
+      Cors:
+        AllowOrigin: "'*'"
+        AllowMethods: "'GET,POST'"
+        MaxAge: "'600'"
       DefinitionBody:
         swagger: '2.0'
         info:
@@ -63,6 +75,7 @@ Resources:
       Handler: handler.echo.EchoHandler
       Runtime: java8
       Timeout: 15
+      MemorySize: 128
       CodeUri: ${CodeUri}
       Events:
         GetRequest:
@@ -78,6 +91,7 @@ Resources:
       Handler: handler.echo.ServiceBasedEchoHandler
       Runtime: java8
       Timeout: 15
+      MemorySize: 128
       Environment:
         Variables:
           CODE_URI: ${CodeUri}
