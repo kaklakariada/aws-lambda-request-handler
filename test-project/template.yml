@@ -54,7 +54,7 @@ Resources:
                 httpMethod: POST
                 type: aws_proxy
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EchoWithPathFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ServiceBasedEchoFunction.Arn}/invocations
 
 
   EchoFunction:
@@ -89,22 +89,13 @@ Resources:
             RestApiId: !Ref ApiGatewayApi
             Path: /echoservice
             Method: GET
-
-  EchoWithPathFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handler.echo.EchoHandler
-      Runtime: java8
-      Timeout: 15
-      CodeUri: ${CodeUri}
-      Events:
-        GetRequest:
+        GetRequestWithPath:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGatewayApi
             Path: /echo/{id}/echo
             Method: GET
-            
+
 Outputs:
   ApiUrl:
     Description: API endpoint URL
