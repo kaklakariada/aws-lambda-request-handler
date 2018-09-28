@@ -19,8 +19,6 @@ package com.github.kaklakariada.aws.lambda.model.request;
 
 import static java.util.Collections.emptyMap;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Map;
 
 public class ApiGatewayRequest {
@@ -85,15 +83,6 @@ public class ApiGatewayRequest {
 	}
 
 	public String getBody() {
-
-		if (getIsBase64Encoded()) {
-			return new String(Base64.getDecoder().decode(body.getBytes()), StandardCharsets.UTF_8);
-		}
-
-		return body;
-	}
-
-	public String getRawBody() {
 		return body;
 	}
 
