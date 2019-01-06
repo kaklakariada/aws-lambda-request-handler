@@ -86,7 +86,7 @@ public class InjectorTest {
 		final IllegalStateException exception = assertThrows(IllegalStateException.class,
 				() -> injector.injectServices(new MyLambdaControllerWithUnsupportedServiceType()));
 		assertThat(exception.getMessage(), containsString(
-				"Field serviceB has unsupported type com.github.kaklakariada.aws.lambda.example.MyServiceB, only Supplier is supported"));
+				"Field serviceB has unsupported type com.github.kaklakariada.aws.lambda.example.MyServiceB, only Supplier<com.github.kaklakariada.aws.lambda.example.MyServiceB> is supported"));
 	}
 
 	@Test

@@ -51,9 +51,10 @@ public class Injector<P extends ServiceParams> {
 	}
 
 	private void inject(LambdaController controller, Field field) {
-		if (!field.getType().equals(Supplier.class)) {
-			throw new IllegalStateException("Field " + field.getName() + " has unsupported type "
-					+ field.getType().getName() + ", only Supplier is supported");
+		final Class<?> fieldType = field.getType();
+		if (!fieldType.equals(Supplier.class)) {
+			throw new IllegalStateException("Field " + field.getName() + " has unsupported type " + fieldType.getName()
+					+ ", only Supplier<" + fieldType.getName() + "> is supported");
 		}
 		final ParameterizedType type = (ParameterizedType) field.getGenericType();
 		assert type.getActualTypeArguments().length == 1;
