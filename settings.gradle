@@ -1,8 +1,5 @@
 rootProject.name = 'aws-lambda-request-handler'
 
-enableFeaturePreview('STABLE_PUBLISHING')
-enableFeaturePreview('IMPROVED_POM_SUPPORT')
-
 if(System.env['CI'] == null) {
   include 'test-project'
 }
