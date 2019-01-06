@@ -78,7 +78,7 @@ public class RequestHandlingServiceTest {
 
 	@Test
 	public void testRequestReturnApiGatewayResponseUnchanged() {
-		final ApiGatewayResponse response = new ApiGatewayResponse(201, emptyMap(), "response2");
+		final ApiGatewayResponse response = ApiGatewayResponse.stringBody(201, emptyMap(), "response2");
 		when(controllerMock.handleRequest(any(), same(contextMock))).thenReturn(response);
 		assertEquals(response(201, "response2"), handleRequest(jsonFactory.objectNode()));
 	}

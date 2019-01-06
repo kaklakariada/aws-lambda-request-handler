@@ -126,6 +126,7 @@ public class RequestHandlingService {
 	}
 
 	private void sendResponse(OutputStream output, ApiGatewayResponse response) {
+		LOG.trace("Sending response {}", response);
 		try {
 			objectMapper.writeValue(output, response);
 		} catch (final Exception e) {
@@ -135,6 +136,7 @@ public class RequestHandlingService {
 	}
 
 	private <T> T parseJsonString(String input, Class<T> type) {
+		LOG.trace("Parsing json as type {}: {}", type.getName(), input);
 		try {
 			return objectMapper.readValue(input, type);
 		} catch (final Exception e) {
@@ -145,7 +147,7 @@ public class RequestHandlingService {
 
 	private ApiGatewayResponse buildErrorResponse(LambdaException e, Context context) {
 		final ErrorResponseBody errorResult = ErrorResponseBody.create(e, context);
-		return new ApiGatewayResponse(e.getErrorCode(), emptyMap(), serializeResult(errorResult));
+		return ApiGatewayResponse.stringBody(e.getErrorCode(), emptyMap(), serializeResult(errorResult));
 	}
 
 	private String serializeResult(Object result) {

@@ -30,14 +30,6 @@ public class ApiGatewayResponse {
 	private final String body;
 	private final boolean base64Encoded;
 
-	public ApiGatewayResponse(int statusCode, Map<String, String> headers, String body) {
-		this(statusCode, headers, body, false);
-	}
-
-	public ApiGatewayResponse(int statusCode, Map<String, String> headers, byte[] body) {
-		this(statusCode, headers, base64Encode(body), true);
-	}
-
 	private ApiGatewayResponse(int statusCode, Map<String, String> headers, String body, boolean base64Encoded) {
 		this.statusCode = statusCode;
 		this.headers = headers;
@@ -46,7 +38,7 @@ public class ApiGatewayResponse {
 	}
 
 	public static ApiGatewayResponse ok(Map<String, String> headers, String body) {
-		return new ApiGatewayResponse(200, headers, body);
+		return stringBody(200, headers, body);
 	}
 
 	public static ApiGatewayResponse ok(String body) {
@@ -54,11 +46,19 @@ public class ApiGatewayResponse {
 	}
 
 	public static ApiGatewayResponse ok(Map<String, String> headers, byte[] body) {
-		return new ApiGatewayResponse(200, headers, base64Encode(body), true);
+		return binaryBody(200, headers, body);
 	}
 
 	public static ApiGatewayResponse ok(byte[] body) {
 		return ok(emptyMap(), body);
+	}
+
+	public static ApiGatewayResponse stringBody(int statusCode, Map<String, String> headers, String body) {
+		return new ApiGatewayResponse(statusCode, headers, body, false);
+	}
+
+	private static ApiGatewayResponse binaryBody(int statusCode, Map<String, String> headers, byte[] body) {
+		return new ApiGatewayResponse(statusCode, headers, base64Encode(body), true);
 	}
 
 	private static String base64Encode(byte[] body) {
