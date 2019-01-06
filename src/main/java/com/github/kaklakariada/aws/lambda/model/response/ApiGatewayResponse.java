@@ -81,4 +81,10 @@ public class ApiGatewayResponse {
 	public boolean isBase64Encoded() {
 		return base64Encoded;
 	}
+
+	@Override
+	public String toString() {
+		return "ApiGatewayResponse [statusCode=" + statusCode + ", headers=" + headers + ", body=" + body
+				+ ", base64Encoded=" + base64Encoded + "]";
+	}
 }

@@ -59,16 +59,17 @@ public class RequestHandlingService {
 
 	public static <P extends ServiceParams> RequestHandlingService create(LambdaController controller,
 			ServiceFactory<P> serviceFactory) {
+		LOG.debug("Create request handler for controller " + controller.getClass().getName());
 		final List<RequestProcessingListener> listeners = new ArrayList<>();
 		if (serviceFactory != null) {
 			final CurrentRequestParamsSupplier<P> serviceParamsSupplier = new CurrentRequestParamsSupplier<>(
 					serviceFactory);
 			listeners.add(serviceParamsSupplier);
 			final Injector<P> injector = new Injector<>(new ServiceCache<>(serviceFactory), serviceParamsSupplier);
-			LOG.debug("Injecting services into controller {} using service factory {}", controller, serviceFactory);
+			LOG.trace("Injecting services into controller {} using service factory {}", controller, serviceFactory);
 			injector.injectServices(controller);
 		} else {
-			LOG.debug("No service factory available, don't inject services");
+			LOG.trace("No service factory available, don't inject services");
 		}
 		final ObjectMapper objectMapper = createObjectMapper();
 		final ControllerAdapter adapter = ControllerAdapter.create(objectMapper, controller);
