@@ -23,10 +23,13 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.IsSame.sameInstance;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 class ApiGatewayRequestTest {
 
@@ -34,11 +37,13 @@ class ApiGatewayRequestTest {
 	private static final String VALUE = "value";
 	private ApiGatewayRequest apiGatewayRequest;
 	private Map<String, String> map;
+	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	public void setup() {
 		apiGatewayRequest = new ApiGatewayRequest();
 		map = singletonMap(KEY, VALUE);
+		objectMapper = new ObjectMapper();
 	}
 
 	@Test
@@ -95,5 +100,25 @@ class ApiGatewayRequestTest {
 		apiGatewayRequest.setStageVariables(map);
 		assertThat(apiGatewayRequest.getStageVariables(), sameInstance(map));
 		assertThat(apiGatewayRequest.getStageVariable(KEY), equalTo(VALUE));
+	}
+
+	@Test
+	void testParseRequest() {
+		final ApiGatewayRequest request = parse(
+				"{ \"resource\": \"/trace\", \"path\": \"/trace\", \"httpMethod\": \"POST\", "
+						+ "\"headers\": { \"accept\": \"*/*\", \"Host\": \"testHost\", \"User-Agent\": \"testUserAgent\", \"X-Amzn-Trace-Id\": \"Root=1-Trace-Id\", \"X-Forwarded-For\": \"testXForwardedFor\", \"X-Forwarded-Port\": \"testXForwardedForPort\", \"X-Forwarded-Proto\": \"https\" }, "
+						+ "\"multiValueHeaders\": { \"accept\": [ \"*/*\" ], \"Host\": [ \"testHostMulti\" ], \"User-Agent\": [ \"testUserAgentMulti\" ], \"X-Amzn-Trace-Id\": [ \"Root=1-Trace-Id\" ], \"X-Forwarded-For\": [ \"testXForwardedForMulti\" ], \"X-Forwarded-Port\": [ \"testXForwardedForPortMulti\" ], \"X-Forwarded-Proto\": [ \"https\" ] }, "
+						+ "\"queryStringParameters\": null, \"multiValueQueryStringParameters\": null, \"pathParameters\": null, \"stageVariables\": { \"stage\": \"testStageVariableStage\" }, "
+						+ "\"requestContext\": { \"resourceId\": \"testResourceId\", \"resourcePath\": \"/testResourcePath\", \"httpMethod\": \"POST\", \"extendedRequestId\": \"extendedRequestId\", \"requestTime\": \"06/Jan/2019:11:56:29 +0000\", \"path\": \"/test/path\", \"accountId\": \"testAccountId\", \"protocol\": \"HTTP/1.1\", \"stage\": \"testStage\", \"domainPrefix\": \"testDomainPrefix\", \"requestTimeEpoch\": 1546775789335, \"requestId\": \"testRequestId\", \"identity\": { \"cognitoIdentityPoolId\": null, \"accountId\": null, \"cognitoIdentityId\": null, \"caller\": null, \"sourceIp\": \"sourceIp\", \"accessKey\": null, \"cognitoAuthenticationType\": null, \"cognitoAuthenticationProvider\": null, \"userArn\": null, \"userAgent\": \"testUserAgent\", \"user\": null }, \"domainName\": \"apiId.execute-api.eu-west-1.amazonaws.com\", \"apiId\": \"testApiId\" }, \"body\": \"testBody\", \"isBase64Encoded\": false }");
+
+		assertThat(request.getBody(), equalTo("testBody"));
+	}
+
+	private ApiGatewayRequest parse(String json) {
+		try {
+			return objectMapper.readValue(json, ApiGatewayRequest.class);
+		} catch (final IOException e) {
+			throw new AssertionError("Parsing json failed: " + e.getMessage(), e);
+		}
 	}
 }

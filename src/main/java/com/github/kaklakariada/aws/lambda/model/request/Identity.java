@@ -84,58 +84,6 @@ public class Identity {
 		return apiKeyId;
 	}
 
-	public void setCognitoIdentityPoolId(String cognitoIdentityPoolId) {
-		this.cognitoIdentityPoolId = cognitoIdentityPoolId;
-	}
-
-	public void setAccountId(String accountId) {
-		this.accountId = accountId;
-	}
-
-	public void setCognitoIdentityId(String cognitoIdentityId) {
-		this.cognitoIdentityId = cognitoIdentityId;
-	}
-
-	public void setCaller(String caller) {
-		this.caller = caller;
-	}
-
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
-	}
-
-	public void setSourceIp(String sourceIp) {
-		this.sourceIp = sourceIp;
-	}
-
-	public void setCognitoAuthenticationType(String cognitoAuthenticationType) {
-		this.cognitoAuthenticationType = cognitoAuthenticationType;
-	}
-
-	public void setCognitoAuthenticationProvider(String cognitoAuthenticationProvider) {
-		this.cognitoAuthenticationProvider = cognitoAuthenticationProvider;
-	}
-
-	public void setUserArn(String userArn) {
-		this.userArn = userArn;
-	}
-
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
-	public void setAccessKey(String accessKey) {
-		this.accessKey = accessKey;
-	}
-
-	public void setApiKeyId(String apiKeyId) {
-		this.apiKeyId = apiKeyId;
-	}
-
 	@Override
 	public String toString() {
 		return "Identity [cognitoIdentityPoolId=" + cognitoIdentityPoolId + ", accountId=" + accountId

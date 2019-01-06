@@ -26,11 +26,13 @@ public class RequestContext {
 	private String accountId;
 	private String resourceId;
 	private String stage;
+	private String domainPrefix;
 	private String requestId;
 	private String extendedRequestId;
 	private Identity identity;
 	private String resourcePath;
 	private String httpMethod;
+	private String domainName;
 	private String apiId;
 	// 22/Apr/2018:14:34:13 +0000
 	private String requestTime;
@@ -98,68 +100,25 @@ public class RequestContext {
 		return getAuthorizer().get(field);
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public String getDomainPrefix() {
+		return domainPrefix;
 	}
 
-	public void setAccountId(String accountId) {
-		this.accountId = accountId;
-	}
-
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
-
-	public void setStage(String stage) {
-		this.stage = stage;
-	}
-
-	public void setRequestId(String requestId) {
-		this.requestId = requestId;
-	}
-
-	public void setExtendedRequestId(String extendedRequestId) {
-		this.extendedRequestId = extendedRequestId;
-	}
-
-	public void setIdentity(Identity identity) {
-		this.identity = identity;
-	}
-
-	public void setResourcePath(String resourcePath) {
-		this.resourcePath = resourcePath;
-	}
-
-	public void setHttpMethod(String httpMethod) {
-		this.httpMethod = httpMethod;
-	}
-
-	public void setApiId(String apiId) {
-		this.apiId = apiId;
-	}
-
-	public void setRequestTime(String requestTime) {
-		this.requestTime = requestTime;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
-
-	public void setRequestTimeEpoch(Long requestTimeEpoch) {
-		this.requestTimeEpoch = requestTimeEpoch;
-	}
-
-	public void setAuthorizer(Map<String, String> authorizer) {
-		this.authorizer = authorizer;
+	public String getDomainName() {
+		return domainName;
 	}
 
 	@Override
 	public String toString() {
 		return "RequestContext [path=" + path + ", accountId=" + accountId + ", resourceId=" + resourceId + ", stage="
-				+ stage + ", requestId=" + requestId + ", extendedRequestId=" + extendedRequestId + ", identity="
-				+ identity + ", resourcePath=" + resourcePath + ", httpMethod=" + httpMethod + ", apiId=" + apiId
-				+ ", requestTime=" + requestTime + ", protocol=" + protocol + ", requestTimeEpoch=" + requestTimeEpoch
-				+ ", authorizer=" + authorizer + "]";
+				+ stage + ", domainPrefix=" + domainPrefix + ", requestId=" + requestId + ", extendedRequestId="
+				+ extendedRequestId + ", identity=" + identity + ", resourcePath=" + resourcePath + ", httpMethod="
+				+ httpMethod + ", domainName=" + domainName + ", apiId=" + apiId + ", requestTime=" + requestTime
+				+ ", protocol=" + protocol + ", requestTimeEpoch=" + requestTimeEpoch + ", authorizer=" + authorizer
+				+ "]";
+	}
+
+	void setAuthorizer(Map<String, String> authorizer) {
+		this.authorizer = authorizer;
 	}
 }

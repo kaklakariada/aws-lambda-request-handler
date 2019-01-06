@@ -19,6 +19,7 @@ package com.github.kaklakariada.aws.lambda.model.request;
 
 import static java.util.Collections.emptyMap;
 
+import java.util.List;
 import java.util.Map;
 
 public class ApiGatewayRequest {
@@ -27,7 +28,9 @@ public class ApiGatewayRequest {
 	private String path;
 	private HttpMethod httpMethod;
 	private Map<String, String> headers;
+	private Map<String, List<String>> multiValueHeaders;
 	private Map<String, String> queryStringParameters;
+	private Map<String, List<String>> multiValueQueryStringParameters;
 	private Map<String, String> pathParameters;
 	private Map<String, String> stageVariables;
 	private RequestContext requestContext;
@@ -54,8 +57,16 @@ public class ApiGatewayRequest {
 		return getHeaders().get(header);
 	}
 
+	public Map<String, List<String>> getMultiValueHeaders() {
+		return multiValueHeaders;
+	}
+
 	public Map<String, String> getQueryStringParameters() {
 		return queryStringParameters != null ? queryStringParameters : emptyMap();
+	}
+
+	public Map<String, List<String>> getMultiValueQueryStringParameters() {
+		return multiValueQueryStringParameters;
 	}
 
 	public String getQueryStringParameter(String parameter) {
@@ -90,51 +101,27 @@ public class ApiGatewayRequest {
 		return isBase64Encoded;
 	}
 
-	public void setResource(String resource) {
-		this.resource = resource;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public void setHttpMethod(HttpMethod httpMethod) {
-		this.httpMethod = httpMethod;
-	}
-
-	public void setHeaders(Map<String, String> headers) {
-		this.headers = headers;
-	}
-
-	public void setQueryStringParameters(Map<String, String> queryStringParameters) {
-		this.queryStringParameters = queryStringParameters;
-	}
-
-	public void setPathParameters(Map<String, String> pathParameters) {
-		this.pathParameters = pathParameters;
-	}
-
-	public void setStageVariables(Map<String, String> stageVariables) {
-		this.stageVariables = stageVariables;
-	}
-
-	public void setRequestContext(RequestContext requestContext) {
-		this.requestContext = requestContext;
-	}
-
-	public void setBody(String body) {
-		this.body = body;
-	}
-
-	public void setBase64Encoded(boolean isBase64Encoded) {
-		this.isBase64Encoded = isBase64Encoded;
-	}
-
 	@Override
 	public String toString() {
 		return "ApiGatewayRequest [resource=" + resource + ", path=" + path + ", httpMethod=" + httpMethod
 				+ ", headers=" + headers + ", queryStringParameters=" + queryStringParameters + ", stageVariables="
 				+ stageVariables + ", requestContext=" + requestContext + ", body=" + body + ", isBase64Encoded="
 				+ isBase64Encoded + "]";
+	}
+
+	void setQueryStringParameters(Map<String, String> queryStringParameters) {
+		this.queryStringParameters = queryStringParameters;
+	}
+
+	void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
+
+	public void setStageVariables(Map<String, String> stageVariables) {
+		this.stageVariables = stageVariables;
+	}
+
+	void setPathParameters(Map<String, String> pathParameters) {
+		this.pathParameters = pathParameters;
 	}
 }
