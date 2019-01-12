@@ -10,6 +10,6 @@ dependencies {
     if(findProject(':aws-sam-gradle')) {
       compile project(':aws-sam-gradle')
     } else {
-      compile 'gradle.plugin.com.github.kaklakariada.aws:aws-sam-gradle:0.5.0'
+      compile 'gradle.plugin.com.github.kaklakariada.aws:aws-sam-gradle:0.6.0'
     }
 }
