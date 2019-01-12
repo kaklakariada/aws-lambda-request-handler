@@ -60,7 +60,7 @@ public class Injector<P extends ServiceParams> {
 		assert type.getActualTypeArguments().length == 1;
 		final Type typeToInject = type.getActualTypeArguments()[0];
 		final Supplier<?> serviceSupplier = getServiceSupplier((Class<?>) typeToInject);
-		LOG.debug("Injecting supplier of type {} into field {}", typeToInject.getTypeName(), field.getName());
+		LOG.trace("Injecting Supplier<{}> into field {}", typeToInject.getTypeName(), field.getName());
 		inject(controller, field, serviceSupplier);
 	}
 
