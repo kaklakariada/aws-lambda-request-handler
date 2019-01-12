@@ -22,6 +22,6 @@ public class InternalServerErrorException extends LambdaException {
 	private static final long serialVersionUID = 1L;
 
 	public InternalServerErrorException(String errorMessage, Throwable cause) {
-		super("Internal Server Error", cause, 500, errorMessage);
+		super("Internal Server Error", errorMessage, 500, cause);
 	}
 }

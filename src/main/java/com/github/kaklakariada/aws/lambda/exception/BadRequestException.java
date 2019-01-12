@@ -21,7 +21,11 @@ public class BadRequestException extends LambdaException {
 
 	private static final long serialVersionUID = 1L;
 
+	public BadRequestException(String errorMessage) {
+		this(errorMessage, null);
+	}
+
 	public BadRequestException(String errorMessage, Throwable cause) {
-		super("Bad request", cause, 400, errorMessage);
+		super("Bad request", errorMessage, 400, cause);
 	}
 }

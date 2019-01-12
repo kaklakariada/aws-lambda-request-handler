@@ -23,7 +23,7 @@ public class LambdaException extends RuntimeException {
 	private final int errorCode;
 	private final String errorMessage;
 
-	protected LambdaException(String message, Throwable cause, int errorCode, String errorMessage) {
+	protected LambdaException(String message, String errorMessage, int errorCode, Throwable cause) {
 		super(message, cause);
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
