@@ -21,8 +21,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.Base64;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +33,7 @@ import com.github.kaklakariada.aws.lambda.model.request.ApiGatewayRequest;
 
 public class BodyArgAdapterFactory extends ArgAdapterFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BodyArgAdapterFactory.class);
+	private static final Logger LOG = LogManager.getLogger(BodyArgAdapterFactory.class);
 
 	private final ObjectMapper objectMapper;
 

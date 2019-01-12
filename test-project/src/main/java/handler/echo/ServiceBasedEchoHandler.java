@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.kaklakariada.aws.lambda.LambdaRequestHandler;
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
@@ -17,7 +17,7 @@ import handler.service.StageBasedEchoService;
 
 public class ServiceBasedEchoHandler extends LambdaRequestHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ServiceBasedEchoHandler.class);
+	private static final Logger LOG = LogManager.getLogger(ServiceBasedEchoHandler.class);
 
 	public ServiceBasedEchoHandler() {
 		super(new ServiceBasedEchoController(), new EchoServiceFactory());

@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.kaklakariada.aws.lambda.controller.LambdaController;
 import com.github.kaklakariada.aws.lambda.exception.InternalServerErrorException;
@@ -34,7 +34,7 @@ import com.github.kaklakariada.aws.lambda.service.ServiceCache;
 import com.github.kaklakariada.aws.lambda.service.ServiceParams;
 
 public class Injector<P extends ServiceParams> {
-	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
+	private static final Logger LOG = LogManager.getLogger(Injector.class);
 
 	private final ServiceCache<P> cache;
 	private final Supplier<P> serviceParams;

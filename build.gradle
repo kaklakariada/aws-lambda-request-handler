@@ -27,19 +27,19 @@ compileTestJava {
 }
 
 dependencies {
-    api 'org.slf4j:slf4j-api:1.7.25'
     api "javax.inject:javax.inject:1"
     api 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    api "org.apache.logging.log4j:log4j-api:${log4jVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     
-    testCompile "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
-    testCompile "org.junit.platform:junit-platform-runner:${junitPlatformVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
+    testImplementation "org.junit.platform:junit-platform-runner:${junitPlatformVersion}"
 
-    testRuntime "org.apache.logging.log4j:log4j-core:${log4jVersion}"
-    testRuntime "org.apache.logging.log4j:log4j-jul:${log4jVersion}"
+    testRuntimeOnly "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    testRuntimeOnly "org.apache.logging.log4j:log4j-jul:${log4jVersion}"
 }
 
 test {

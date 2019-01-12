@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -49,7 +49,7 @@ import com.github.kaklakariada.aws.lambda.service.ServiceFactory;
 import com.github.kaklakariada.aws.lambda.service.ServiceParams;
 
 public class RequestHandlingService {
-	private static final Logger LOG = LoggerFactory.getLogger(RequestHandlingService.class);
+	private static final Logger LOG = LogManager.getLogger(RequestHandlingService.class);
 
 	private static final boolean FAIL_ON_UNKNOWN_JSON_PROPERTIES = false;
 
