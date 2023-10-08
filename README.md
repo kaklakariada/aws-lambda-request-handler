@@ -1,6 +1,8 @@
 # aws-lambda-request-handler
 Framework for creating AWS Lambda functions in API Gateway proxy integration mode.
 
+## ⚠️ This project is not maintained any more ⚠️
+
 [![Build Status](https://travis-ci.org/kaklakariada/aws-lambda-request-handler.svg?branch=master)](https://travis-ci.org/kaklakariada/aws-lambda-request-handler)
 [![Download](https://api.bintray.com/packages/kaklakariada/maven/aws-lambda-request-handler/images/download.svg) ](https://bintray.com/kaklakariada/maven/aws-lambda-request-handler/_latestVersion)
 
